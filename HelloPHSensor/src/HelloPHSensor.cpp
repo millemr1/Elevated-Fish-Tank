@@ -32,7 +32,7 @@ void setup() {
 }
 void loop() {
   phVal = takePhReading(pHPin, LEDPIN);
-  Serial.printf("PH VAL: %.2f" ,phVal);
+  Serial.printf("PH VAL: %.2f \n" ,phVal);
 }
 
 float takePhReading(int _sensorPin, int _ledpin){
@@ -49,8 +49,7 @@ float takePhReading(int _sensorPin, int _ledpin){
       voltage = averageArray(phArray, phArrayLength)*(5.0/1024); //conversion factor place elsewhere later?
       pHValue = -19.185119 * voltage + offset;
       samplingTime = millis();
-     }
-     return pHValue; //for now
+     }  //for now
   }
   if(millis()- printTime > printInterval){
       Serial.printf("Voltage: %f \n" , voltage);
@@ -58,6 +57,7 @@ float takePhReading(int _sensorPin, int _ledpin){
       digitalWrite(_ledpin, digitalRead(_ledpin) ^ 1);  //flashes the LED using a bitwise operator
       printTime = millis();
    }
+   return pHValue;
 }
 
 float averageArray(int *arr, int number){
@@ -70,7 +70,7 @@ if (number <= 0){
   return 0;
 }
   if (number < 5){
-    for(i = 0; i < number , 0; i++){  //for cases where there are less than 3 elements in the array
+    for(i = 0; i < number; i++){  //for cases where there are less than 3 elements in the array
      amount += arr[i];
     }
      _avg = amount/ number;
@@ -103,6 +103,7 @@ if (number <= 0){
     } //else
   } //for
   _avg = amount/(number-2);
+  Serial.printf("Avg: %.2f \n " , _avg);
 } //if
 return _avg;
 }
