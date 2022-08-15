@@ -24,7 +24,7 @@ const int printInterval = 2000;  //not quite sure what this is for yet
 const int phArrayLength = 40;
 int phArray[phArrayLength];  //average the values of the reading for a more statistically accurate result
 float phVal; 
-int phSlope = -80.50;
+int phSlope = -80.575;
 //int i;
 void setup() {
   pinMode(LEDPIN, OUTPUT);
@@ -37,7 +37,7 @@ void loop() {
   //phVal = (analog - 2822.62)/(-80.575);
   Serial.printf("PH: %.3f \n" , phVal);
 
-  phVal = takePHreading(pHPin, LEDPIN, phSlope, 2850.2);
+  phVal = takePHreading(pHPin, LEDPIN, phSlope, 2822.62);
   Serial.printf("PH VAL: %.2f \n" , phVal);
 }
 
