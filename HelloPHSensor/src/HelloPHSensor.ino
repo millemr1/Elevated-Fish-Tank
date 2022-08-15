@@ -6,105 +6,36 @@
  */
 
 const int pHPin  =  A4;
- //will need to calculate later for my specfic sensor for 
-const int LEDPIN = D7;
-const int sampleInterval = 500;
-const int printInterval = 2000;  //not quite sure what this is for yet
-const int phArrayLength = 40;
-int phArray[phArrayLength];  //average the values of the reading for a more statistically accurate result
-float phVal; 
-int phSlope = -80.575;
-//int i;
+float phSlope = -80.575;
+float offset = 2822.62;
+float phVal;
 void setup() {
-  pinMode(LEDPIN, OUTPUT);
-  //pinMode(pHpin, INPUT);
+  pinMode(pHPin, INPUT);
   Serial.begin(9600);
 }
 void loop() {
   //analog = analogRead(pHPin);
   //Serial.printf("Analog: %i \n" , analog);
   //phVal = (analog - 2822.62)/(-80.575);
-  Serial.printf("PH: %.3f \n" , phVal);
+  //Serial.printf("PH: %.3f \n" , phVal);
 
-  phVal = takePHreading(pHPin, LEDPIN, phSlope, 2822.62);
-  Serial.printf("PH VAL: %.2f \n" , phVal);
+  phVal = readPH(pHPin, offset, phSlope);
+ //Serial.printf("PH VAL: %.2f \n" , phVal);
 }
+float readPH(int _sensorPin, float _offset, float  _slope){
+  float PH;
+  int phReading, i;
+  static int samplingTime;
+  int _interval = 2000; 
 
-float takePHreading(int _sensorPin, int _ledpin, int _slope, float offset){
-  static unsigned long samplingTime = millis();
-  static unsigned long  printTime = millis();
-  static float pHValue, avgVoltage;
-  static int i = 0;  //maybe make static 
-  if(millis()- samplingTime > sampleInterval){  
-     //this feels like a lot for one line of code
-     phArray[i++] = analogRead(_sensorPin);   //averaged values of analog read 
-     if(phArrayLength == 40){  
-      avgVoltage = averageArray(phArray , phArrayLength);
-      i = 0;  //reset the index //conversion factor place elsewhere later?
-      pHValue =  (avgVoltage - offset)/_slope;
-      samplingTime = millis();
-     }  //for now
-  }
-  if(millis()- printTime > printInterval){
-      Serial.printf("Voltage: %f \n" , avgVoltage);
-      Serial.printf("PH value: %f \n" , pHValue);
-      digitalWrite(_ledpin, digitalRead(_ledpin) ^ 1);  //flashes the LED using a bitwise operator
-      printTime = millis();
-   }
-   return pHValue;
-}
-
-float averageArray(int *arr, int number){
-float _avg;  //why does this use the data type double? i changed it to float.
-int i; 
-int _max, _min;  
-float amount = 0.00;  //long data type?
-if (number <= 0){
-  Serial.printf("Error in Number being returned \n");
-  return 0;
-}
-  if (number < 5){
-    for(i = 0; i < number; i++){  //for cases where there are less than 3 elements in the array
-     amount += arr[i];
+  if (millis()- samplingTime > _interval){
+    for(i = 0; i < 40; i++){
+      phReading = analogRead(_sensorPin);
+      delayMicroseconds(100);
     }
-     _avg = amount/ number;
-     Serial.printf("Avg when less than 5 elements\n");
-  return _avg;
-  }  
-  else {  //all of the following seems to be happening in the if statement 
-    //for when there are only two elements in the array?
-    if(arr[0] < arr[1]){ 
-    _min = arr[0]; 
-    _max = arr[1]; 
-    Serial.printf("Min and Max stored 1 \n");
-    }  
-  else{
-    _min = arr[1];
-    _max = arr[0];  
-
-    Serial.printf("Min and Max stored 2 \n");
-  }  //else
-  for(i = 2; i < number; i++){  //why does it need to start here?
-    if(arr[i] < _min){  //storing min and max in first two elements of the array for some reason
-      amount += _min;
-      _max = arr[i];
-      Serial.printf("Min: %i \n" , _min);
-
-    }  //if
-    else {
-      if(arr[i] > _max ){
-        //sum the amount with the minimum amount 
-        amount += _max;   //an element of an array < current Minimum 
-        _max = arr[i];  //arr > max
-        Serial.printf("Max: %i \n" , _max);
-      }  //if
-      else{
-        amount += arr[i];  //when the array[i] is between min and max
-      }
-    } //else
-  } //for
-  _avg = amount/(number-2);
-  Serial.printf("Avg: %.2f \n " , _avg);
-} //if
-return _avg;
+    PH  = (phReading - _offset)/_slope;
+    Serial.printf("PH: %.2f \n" , PH);
+    samplingTime = millis();
+  }
+  return PH;
 }
