@@ -13,7 +13,7 @@ const int printInterval = 2000;  //not quite sure what this is for yet
 const int phArrayLength = 40;
 int phArray[phArrayLength];  //average the values of the reading for a more statistically accurate result
 float phVal; 
-int analog;
+int phSlope = -80.50;
 //int i;
 void setup() {
   pinMode(LEDPIN, OUTPUT);
@@ -21,33 +21,32 @@ void setup() {
   Serial.begin(9600);
 }
 void loop() {
-  analog = analogRead(pHPin);
-  Serial.printf("Analog: %i \n" , analog);
-  phVal = (analog - 2744.5)/(-80.50);
-  Serial.printf("Analog: %i \n" , analog);
+  //analog = analogRead(pHPin);
+  //Serial.printf("Analog: %i \n" , analog);
+  //phVal = (analog - 2822.62)/(-80.575);
+  Serial.printf("PH: %.3f \n" , phVal);
 
-  //phVal = takePhReading(pHPin, LEDPIN);
-  ////Serial.printf("PH VAL: %.2f \n" ,phVal);
+  phVal = takePHreading(pHPin, LEDPIN, phSlope, 2850.2);
+  Serial.printf("PH VAL: %.2f \n" , phVal);
 }
 
-float takePHreading(int _sensorPin, int _ledpin){
-  const int offset = 2744.84;
+float takePHreading(int _sensorPin, int _ledpin, int _slope, float offset){
   static unsigned long samplingTime = millis();
   static unsigned long  printTime = millis();
-  static float pHValue, voltage;
+  static float pHValue, avgVoltage;
   static int i = 0;  //maybe make static 
   if(millis()- samplingTime > sampleInterval){  
      //this feels like a lot for one line of code
      phArray[i++] = analogRead(_sensorPin);   //averaged values of analog read 
      if(phArrayLength == 40){  
-      i = 0;  //reset the index
-      voltage = averageArray(phArray, phArrayLength)*(5.0/1024); //conversion factor place elsewhere later?
-      pHValue = -80.50* voltage + offset;
+      avgVoltage = averageArray(phArray , phArrayLength);
+      i = 0;  //reset the index //conversion factor place elsewhere later?
+      pHValue =  (avgVoltage - offset)/_slope;
       samplingTime = millis();
      }  //for now
   }
   if(millis()- printTime > printInterval){
-      Serial.printf("Voltage: %f \n" , voltage);
+      Serial.printf("Voltage: %f \n" , avgVoltage);
       Serial.printf("PH value: %f \n" , pHValue);
       digitalWrite(_ledpin, digitalRead(_ledpin) ^ 1);  //flashes the LED using a bitwise operator
       printTime = millis();
