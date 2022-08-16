@@ -11,15 +11,20 @@
  * Date: 8/15/2022
  */
 #include <math.h>
+#include "IotTimer.h"
+
 void setup();
 void loop();
 void turnLaserOn(int _digitalPin);
 float getTurbidity(int _sensorPin);
-#line 8 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/HelloClaritySensor/src/HelloClaritySensor.ino"
+#line 10 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/HelloClaritySensor/src/HelloClaritySensor.ino"
+IoTTimer laserTimer; //can I include this in the function?
+
 int laserReading;
 int LASERPIN = D12; //LASER PIN FOR TURPIDITY SENSOR
 int TURPIN = A5;
 unsigned int lastTime, currentTime;
+
 void setup() {
     pinMode(D12, OUTPUT);
     pinMode(A5, INPUT);
@@ -39,16 +44,15 @@ void loop() {
   }
 void turnLaserOn(int _digitalPin){  
   //perhaps make a bool function 
-  static int lastTime;
-  if(millis()- lastTime > 5000){
-  digitalWrite(_digitalPin, HIGH);
-  Serial.printf("Turning laser on \n");
-  lastTime = millis();
-  }
-  else{
-    digitalWrite(_digitalPin, LOW);
-    Serial.printf("Turning laser off \n");
-  }
+    laserTimer.startTimer(5000);
+    if(!laserTimer.isTimerReady()){
+    digitalWrite(_digitalPin, HIGH);
+    Serial.printf("Laser on \n");
+    }
+    else if(laserTimer.isTimerReady()){
+      digitalWrite(_digitalPin, LOW);
+      Serial.printf("Laser off \n");
+    }
 }
   float getTurbidity(int _sensorPin) {  
     //maybe make average its own function and tobidity another one
