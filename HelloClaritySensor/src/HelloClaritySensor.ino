@@ -23,9 +23,11 @@ void loop() {
    Serial.printf("Reading: %i \n" , laserReading);  //voltage increases as resistance decreses when more light is on the photoresistor/ when there is less light the resitance increases and voltage decreases 10k reistor
    lastTime =  millis();
   }
-  
+  turnLaserOn(LASERPIN);
+  getTurbidity(TURPIN);
   }
-void turnLaserOn(int _digitalPin){  //perhaps make a bool function 
+void turnLaserOn(int _digitalPin){  
+  //perhaps make a bool function 
   int lastTime;
   if(millis()- lastTime > 5000){
   digitalWrite(_digitalPin, HIGH);
@@ -33,27 +35,30 @@ void turnLaserOn(int _digitalPin){  //perhaps make a bool function
   lastTime = millis();
   }
   else{
-    digitalWrite(_digialPin, LOW);
+    digitalWrite(_digitalPin, LOW);
     Serial.printf("Turning laser off \n");
   }
 }
-  float getTurbidity(int _sensorPin, float _offset, float slope) {
+  float getTurbidity(int _sensorPin) {  
+    //maybe make average its own function and tobidity another one
   float turbidity;
   float _avg;
   int vAnalogRead, i;
   int samplingTime; 
   int _interval = 5000;
-  turnLaserOn();
+  //turnLaserOn(LASERPIN); //just an idea
    if((millis()- samplingTime) > _interval){
     for (i=0; i< 800; i++){
       vAnalogRead = vAnalogRead + analogRead(_sensorPin);
       delayMicroseconds(100);
     }
     _avg = vAnalogRead/800.00;
-    turbidity = -1185551.78*power(_avg, 2) + 6874.09 * _avg + 0.91;
-      //linear regression for data 2 is loweres cloudniness
+    Serial.printf("Avg: %.2f" ,_avg);
+    turbidity = -1185551.78*power(_avg, 2) + 6874.09 * _avg + 0.91;  
+      //quadratic regression for this specific sensor
+      //linear regression for data 2 is lowest cloudiness I could find
       Serial.printf("Tur: %.2f" , turbidity);
     samplingTime = millis();
-  }
-
-  };
+   }
+  return turbidity;
+}
