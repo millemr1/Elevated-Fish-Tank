@@ -24,16 +24,17 @@ void loop() {
 }
 float readPH(int _sensorPin, float _offset, float  _slope){
   float PH;
+  float _avg;
   int phReading, i;
   static int samplingTime;
   int _interval = 2000; 
 
   if (millis()- samplingTime > _interval){
     for(i = 0; i < 40; i++){
-      phReading = analogRead(_sensorPin);
+      phReading = phReading + analogRead(_sensorPin);  //store new readings plus old readings 
       delayMicroseconds(100);
     }
-    _avg = phReading/40;
+    _avg = phReading/40.00;
     PH  = (_avg - _offset)/_slope;
     Serial.printf("PH: %.2f \n" , PH);
     samplingTime = millis();

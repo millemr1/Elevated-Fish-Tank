@@ -17,18 +17,19 @@ void setup() {
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop() {
-  currentTime = millis();
-  if((currentTime - lastTime) > 2000){
-   laserReading = analogRead(A5);
-   Serial.printf("Reading: %i \n" , laserReading);  //voltage increases as resistance decreses when more light is on the photoresistor/ when there is less light the resitance increases and voltage decreases 10k reistor
-   lastTime =  millis();
-  }
+ // currentTime = millis();
+  //if((currentTime - lastTime) > 2000){
+  // laserReading = analogRead(A5);
+  // Serial.printf("Reading: %i \n" , laserReading);  //voltage increases as resistance decreses when more light is on the photoresistor/ when there is less light the resitance increases and voltage decreases 10k reistor
+  // lastTime =  millis();
+ // }
   turnLaserOn(LASERPIN);
   getTurbidity(TURPIN);
   }
 void turnLaserOn(int _digitalPin){  
   //perhaps make a bool function 
-  int lastTime;
+  static int lastTime;
+  currentTime =  millis();
   if(millis()- lastTime > 5000){
   digitalWrite(_digitalPin, HIGH);
   Serial.printf("Turning laser on \n");
@@ -54,7 +55,7 @@ void turnLaserOn(int _digitalPin){
     }
      _avg = vAnalogRead/800.00;
      Serial.printf("Avg: %.2f" ,_avg);
-      turbidity = -1185551.78*pow(_avg, 2) + 6874.09 * _avg + 0.091;  
+      turbidity = -1185551.78*pow((1/_avg), 2) + 6874.09 * (1/_avg) + 0.091;  
       //quadratic regression for this specific sensor
       //linear regression for data 2 is lowest cloudiness I could find
       Serial.printf("Tur: %.2f \n" , turbidity);
