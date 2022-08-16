@@ -33,7 +33,8 @@ float readPH(int _sensorPin, float _offset, float  _slope){
       phReading = analogRead(_sensorPin);
       delayMicroseconds(100);
     }
-    PH  = (phReading - _offset)/_slope;
+    _avg = phReading/40;
+    PH  = (_avg - _offset)/_slope;
     Serial.printf("PH: %.2f \n" , PH);
     samplingTime = millis();
   }
