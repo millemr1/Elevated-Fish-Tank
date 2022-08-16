@@ -54,11 +54,11 @@ void turnLaserOn(int _digitalPin){
     }
      _avg = vAnalogRead/800.00;
      Serial.printf("Avg: %.2f" ,_avg);
-      turbidity = -1185551.78*pow(_avg, 2) + 6874.09 * _avg + 0.91;  
+      turbidity = -1185551.78*pow(_avg, 2) + 6874.09 * _avg + 0.091;  
       //quadratic regression for this specific sensor
       //linear regression for data 2 is lowest cloudiness I could find
-      Serial.printf("Tur: %.2f" , turbidity);
+      Serial.printf("Tur: %.2f \n" , turbidity);
       samplingTime = millis();
    }
   return turbidity;
-}
+  }
