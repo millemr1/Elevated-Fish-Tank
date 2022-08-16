@@ -39,12 +39,16 @@ void loop() {
   // Serial.printf("Reading: %i \n" , laserReading);  //voltage increases as resistance decreses when more light is on the photoresistor/ when there is less light the resitance increases and voltage decreases 10k reistor
   // lastTime =  millis();
  // }
+  laserTimer.startTimer(5000);
+   Serial.printf("Starting Time \n");
+  
   turnLaserOn(LASERPIN);
   getTurbidity(TURPIN);
   }
 void turnLaserOn(int _digitalPin){  
   //perhaps make a bool function 
-    laserTimer.startTimer(5000);
+    //laserTimer.startTimer(5000); 
+    //Serial.printf("Starting Time \n");
     if(!laserTimer.isTimerReady()){
     digitalWrite(_digitalPin, HIGH);
     Serial.printf("Laser on \n");
@@ -68,7 +72,7 @@ void turnLaserOn(int _digitalPin){
       delayMicroseconds(100);
     }
      _avg = vAnalogRead/800.00;
-     Serial.printf("Avg: %.2f" ,_avg);
+     Serial.printf("Avg: %.2f \n" ,_avg);
       turbidity = -1185551.78*pow((1/_avg), 2) + 6874.09 * (1/_avg) + 0.091;  
       //quadratic regression for this specific sensor
       //linear regression for data 2 is lowest cloudiness I could find
