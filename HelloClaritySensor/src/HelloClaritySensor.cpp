@@ -50,7 +50,8 @@ void turnLaserOn(int _digitalPin){
     Serial.printf("Turning laser off \n");
   }
 }
-  float getTurbidity(int _sensorPin) {
+  float getTurbidity(int _sensorPin) {  
+    //maybe make average its own function and tobidity another one
   float turbidity;
   float _avg;
   int vAnalogRead, i;
@@ -62,13 +63,13 @@ void turnLaserOn(int _digitalPin){
       vAnalogRead = vAnalogRead + analogRead(_sensorPin);
       delayMicroseconds(100);
     }
-    _avg = vAnalogRead/800.00;
-    Serial.printf("Avg: %.2f" ,_avg);
-    turbidity = -1185551.78*power(_avg, 2) + 6874.09 * _avg + 0.91;  
+     _avg = vAnalogRead/800.00;
+     Serial.printf("Avg: %.2f" ,_avg);
+      turbidity = -1185551.78*pow(_avg, 2) + 6874.09 * _avg + 0.91;  
       //quadratic regression for this specific sensor
       //linear regression for data 2 is lowest cloudiness I could find
       Serial.printf("Tur: %.2f" , turbidity);
-    samplingTime = millis();
+      samplingTime = millis();
    }
   return turbidity;
 }
