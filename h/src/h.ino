@@ -24,7 +24,7 @@ void setup() {
 }
 
 void loop() {
-  foodReady = setTime(14,02);
+  foodReady = setTime(16, 39);
   lightOn = setTime(16, 35);  
   lightOff = setTime(16, 36);
   if(foodReady){

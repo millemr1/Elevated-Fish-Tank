@@ -34,8 +34,8 @@ void setup() {
 }
 
 void loop() {
-  foodReady = setTime(14,02);
-  lightOn = setTime(16, 35);
+  foodReady = setTime(16, 39);
+  lightOn = setTime(16, 35);  
   lightOff = setTime(16, 36);
   if(foodReady){
    myStepper.step(-512);  //about 90 degrees 25% of 360
@@ -55,7 +55,7 @@ void loop() {
 }
 bool setTime(int _setHours, int _setMinutes){  //I think this method will work for the laser this feels like too much  //could also only pass desired time in?
   bool timeReady = false;
-  int currentTime = (Time.hour()*60)+(Time.minute());  //conveert to minute
+  int currentTime = (Time.hour()*60)+(Time.minute());  //convert to minute
   Serial.printf("Current Time: %i \n", currentTime);
   int setTime = (_setHours*60)+_setMinutes;  //convert time into minutes?  should I do somthing with the seconds?
    Serial.printf("Set Time: %i \n" ,setTime);
