@@ -35,8 +35,8 @@ void setup() {
 
 void loop() {
   foodReady = setTime(14,02);
-  lightOn = setTime(16, 29);
-  lightOff = setTime(16, 28);
+  lightOn = setTime(16, 35);
+  lightOff = setTime(16, 36);
   if(foodReady){
    myStepper.step(-512);  //about 90 degrees 25% of 360
     delay(250);
