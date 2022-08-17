@@ -84,10 +84,10 @@ int getMedian(int array1[], int  arrayLen) {
     }
   }
   if ((arrayLen & 1) > 0){ //checks if odd
-    arrayTemp = array1Tab[(arrayLen - 1) / 2]; //subtract 1 due to the number of array starting at 0, and check if it in 
+    arrayTemp = array1Tab[(arrayLen - 1) / 2]; //take to middle most number because the array is ordered
   }
   else{  //i added these brackets 
-    arrayTemp = (array1Tab[arrayLen/ 2] + array1Tab[arrayLen / 2 - 1]) / 2;
+    arrayTemp = (array1Tab[arrayLen/ 2] + array1Tab[arrayLen / 2 - 1]) / 2;  //average if even middle becuase the array is ordered 
   }
    return arrayTemp;
 }
