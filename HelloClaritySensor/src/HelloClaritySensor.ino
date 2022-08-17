@@ -10,13 +10,13 @@
 IoTTimer laserTimer; //can I include this in the function?
 
 int laserReading;
-int LASERPIN = D12; //LASER PIN FOR TURPIDITY SENSOR
-int TURPIN = A5;
+int LASERPIN = A2; //LASER PIN FOR TURPIDITY SENSOR
+int TURPIN = A4;
 unsigned int lastTime, currentTime;
 float TUR;
 
 void setup() {
-    pinMode(D12, OUTPUT);
+    pinMode(A2, OUTPUT);
     pinMode(A5, INPUT);
     Serial.begin(9600);
 }
@@ -28,11 +28,11 @@ void loop() {
   // Serial.printf("Reading: %i \n" , laserReading);  //voltage increases as resistance decreses when more light is on the photoresistor/ when there is less light the resitance increases and voltage decreases 10k reistor
   // lastTime =  millis();
  // }
-  TUR = (TURPIN, LASERPIN);
+  TUR = readTurbidity(TURPIN);
 
-  Serial.printf("Tubdidity: %.f \n" , TUR);
+  //Serial.printf("Tubdidity: %.f \n" , TUR);
 }
-  float readturbidity(int _sensorPin, int _sensorPin2) {  
+  float readTurbidity(int _sensorPin) {  
     //maybe make average its own function and tobidity another one
   static float turbidity;
   static float samplingTime; 
@@ -42,13 +42,13 @@ void loop() {
   int _interval = 30000;  //for testing purposes
    //just an idea
    if((millis()- samplingTime) > _interval){
-      digitalWrite(_sensorPin2, HIGH);
+      digitalWrite(LASERPIN, HIGH);
       Serial.printf(" Laser On");
     for (i=0; i< 800; i++){
       vAnalogRead[i] = analogRead(_sensorPin);
       delayMicroseconds(100);
     }
-      digitalWrite(_sensorPin2, LOW);
+      digitalWrite(LASERPIN, LOW);
       _median = getMedian(vAnalogRead, 800);  //maybe convert to voltage value
       Serial.printf( "Med: %.2f \n" , _median);
       turbidity = -1185551.78*pow((_median), 2) + 6874.09 * (_median) + 0.091;  
