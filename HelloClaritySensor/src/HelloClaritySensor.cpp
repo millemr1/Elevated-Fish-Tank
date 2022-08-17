@@ -48,21 +48,23 @@ void loop() {
   static float turbidity;
   static float samplingTime; 
   float _median;
-  int vAnalogRead[800]; 
+  int vAnalogRead[100]; 
   int i = 0;
   int _interval = 30000;  //for testing purposes
    //just an idea
    if((millis()- samplingTime) > _interval){
       digitalWrite(LASERPIN, HIGH);
       Serial.printf(" Laser On");
-    for (i=0; i< 800; i++){
+    for (i=0; i< 100; i++){
+      Serial.printf("i: %i" , i);
       vAnalogRead[i] = analogRead(_sensorPin);
       delayMicroseconds(100);
     }
       digitalWrite(LASERPIN, LOW);
-      _median = getMedian(vAnalogRead, 800);  //maybe convert to voltage value
+      Serial.printf("Median getting \n");
+      _median = getMedian(vAnalogRead, 100);  //maybe convert to voltage value
       Serial.printf( "Med: %.2f \n" , _median);
-      turbidity = -1185551.78*pow((_median), 2) + 6874.09 * (_median) + 0.091;  
+      turbidity = -1185551.78*pow((1/_median), 2) + 6874.09 * (1/_median) + 0.091;   //QUADRATIC REGRESSION INVERSSED BECAUSE WE WANT A 
       //quadratic regression for this specific sensor
       //linear regression for data 2 is lowest cloudiness I could find
       Serial.printf("Tur: %.2f \n" , turbidity);
@@ -77,19 +79,22 @@ int getMedian(int array1[], int  arrayLen) {
   for (byte i = 0; i < arrayLen; i++){
     //array Len  is the number of times being sampled in my case 800
     array1Tab[i] = array1[i];  //making copy of array
+    Serial.printf("Arr: %i \n" , i);
   }  //does this tab go here?
   for (j = 0; j < arrayLen - 1; j++){ //take largest number and move it to end of the array //tells you how many elements in the array from the end have been ordered
+      Serial.printf("J: %i \n" , j);
     for (i = 0; i < arrayLen- j - 1; i++) {  //for each index go through previous indexes
       if (array1Tab[i] > array1Tab[i + 1]){   
         // if some number is greater than the next
         arrayTemp = array1Tab[i];  
         array1Tab[i] = array1Tab[i + 1];  //swap values in i and i+i places of array
         array1Tab[i + 1] = arrayTemp;   
+        Serial.printf("ORDERING: %i \n" , array1Tab[i]);
       }
     Serial.printf("Arr tab: %i \n Array Temp: %i \n" , array1[i], arrayTemp);
     }
   }
-  if ((arrayLen & 1) > 0){  //checks if odd
+  if ((arrayLen & 1) > 0){ //checks if odd
     arrayTemp = array1Tab[(arrayLen - 1) / 2]; //subtract 1 due to the number of array starting at 0, and check if it in 
   }
   else{  //i added these brackets 
