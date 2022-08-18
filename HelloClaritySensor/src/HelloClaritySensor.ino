@@ -7,8 +7,6 @@
 #include <math.h>
 #include "IotTimer.h"
 
-IoTTimer laserTimer; //can I include this in the function?
-
 int laserReading;
 int LASERPIN = D4; //LASER PIN FOR TURPIDITY SENSOR
 int TURPIN = A5;
@@ -39,15 +37,15 @@ void loop() {
 }
   float readTurbidity(int _sensorPin) {  
     //maybe make average its own function and tobidity another one
-  static float turbidity;
+  static float turbidity;  
   static float samplingTime; 
   float _median;
   int vAnalogRead[100]; 
   int i = 0;
-  int _interval = 900000;  //for 900000 milliseconds for 15 minutes 
+  int _interval = 5000;  //for 900000 milliseconds for 15 minutes 
    //just an idea
    if((millis()- samplingTime) > _interval){
-      digitalWrite(LASERPIN, HIGH);
+      digitalWrite(LASERPIN, HIGH);  
       Serial.printf(" Laser On");
     for (i=0; i< 100; i++){
       Serial.printf("i: %i" , i);

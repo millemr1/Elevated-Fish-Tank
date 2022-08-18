@@ -23,7 +23,7 @@ int getMedian(int array1[], int  arrayLen);
 const int STEPSPERREVOLUTION = 2048;
 int RELAYPIN = D11;
 bool lightOn, lightOff, foodReady;
-int LASERPIN = D4; //LASER PIN FOR TURPIDITY SENSOR
+int LASERPIN = D12; //LASER PIN FOR TURPIDITY SENSOR
 int TURPIN = A5;  //i may not makes these global forever, but for now this works
 float TUR;
 
@@ -46,9 +46,9 @@ void setup() {
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop() {
-  foodReady = setTime(16, 41);  //military time
-  lightOn = setTime(16, 25);   //two vai
-  lightOff = setTime(16, 36);
+  foodReady = setTime(17, 28);  //military time
+  lightOn = setTime(17, 26);   //two vai
+  lightOff = setTime(17, 27);
 
    if(foodReady){
    myStepper.step(-512);  //about 90 degrees 25% of 360
@@ -90,13 +90,12 @@ float readTurbidity(int _sensorPin) {
   float _median;
   int vAnalogRead[100]; 
   int i = 0;
-  int _interval = 900000;  //for 900000 milliseconds for 15 minutes 
-   //just an idea
-   //if((millis()- samplingTime) > _interval){
-      digitalWrite(LASERPIN, HIGH);
+  int _interval = 30000;  //for 900000 milliseconds for 15 minutes 
+   if((millis()- samplingTime) > _interval){
+      digitalWrite(LASERPIN, HIGH);  //make this local soon
       Serial.printf(" Laser On");
     for (i=0; i< 100; i++){
-      Serial.printf("i: %i" , i);
+      Serial.printf("i: %i \n" , i);
       vAnalogRead[i] = analogRead(_sensorPin);
       delayMicroseconds(100);
     }
@@ -109,9 +108,10 @@ float readTurbidity(int _sensorPin) {
       //linear regression for data 2 is lowest cloudiness I could find
       Serial.printf("Tur: %.2f \n" , turbidity);
       //samplingTime = millis();
-   //}
+   }
   return turbidity;
   }
+
 int getMedian(int array1[], int  arrayLen) {  
   int array1Tab[arrayLen];  
   int i, j, arrayTemp;
