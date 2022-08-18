@@ -1,43 +1,77 @@
 /*
- * Project HelloClaritySensor
- * Description: Get Clarity Sensor 
+ * Project Tubidity_Relay_Stepper_Publish
+ * Description: Integrate Basic functionality of my code
  * Author: Micalah Miller
- * Date: 8/15/2022
+ * Date: 8/18/2022
  */
+
 #include <math.h>
-#include "IotTimer.h"
+#include "Stepper.h"
 
-IoTTimer laserTimer; //can I include this in the function?
-
-int laserReading;
+const int STEPSPERREVOLUTION = 2048;
+int RELAYPIN = D11;
+bool lightOn, lightOff, foodReady;
 int LASERPIN = D4; //LASER PIN FOR TURPIDITY SENSOR
-int TURPIN = A5;
-unsigned int lastTime, currentTime;
+int TURPIN = A5;  //i may not makes these global forever, but for now this works
 float TUR;
 
+//declare objects
+Stepper myStepper(STEPSPERREVOLUTION, D6, D4, D5, D3);
+
 void setup() {
-    pinMode(LASERPIN, OUTPUT);
-    pinMode(TURPIN, INPUT);
-    Serial.begin(9600);
+  
+  Time.zone(-6);  //MDT
+  Particle.syncTime(); 
+  
+  pinMode(RELAYPIN, OUTPUT);  //pinModes for circuits
+  pinMode(LASERPIN, OUTPUT);
+  pinMode(TURPIN, INPUT);
 
+  myStepper.setSpeed(15);  //15 revolutions per minute
+  
+  Serial.begin(9600);
 }
 
+// loop() runs over and over again, as quickly as it can execute.
 void loop() {
- // currentTime = millis();
-  //if((currentTime - lastTime) > 2000){
-  // laserReading = analogRead(A5);
-  // Serial.printf("Reading: %i \n" , laserReading);  //voltage increases as resistance decreses when more light is on the photoresistor/ when there is less light the resitance increases and voltage decreases 10k reistor
-  // lastTime =  millis();
-  //*digitalWrite(LASERPIN, HIGH);
-//   delay(5000);
-//   digitalWrite(LASERPIN, LOW);
-//   delay(5000);*/
-//  // }
- TUR = readTurbidity(TURPIN);
+  foodReady = setTime(16, 41);  //military time
+  lightOn = setTime(16, 25);   //two vai
+  lightOff = setTime(16, 36);
 
-  //Serial.printf("Tubdidity: %.f \n" , TUR);
+   if(foodReady){
+   myStepper.step(-512);  //about 90 degrees 25% of 360
+    delay(250);
+    myStepper.step(512);  
+    Serial.print("Food Ready \n");
+     }
+    if(lightOn){
+      digitalWrite(RELAYPIN, HIGH);
+      Serial.printf(" Aq On \n");
+    }
+    else if(lightOff){
+      digitalWrite(RELAYPIN, LOW);
+      Serial.printf("AQ Off \n");
+    }
+
+  TUR = readTurbidity(TURPIN); //this may interfear with other code since I have it reading every 15 minutes right now
+  Serial.printf( "Tur: \n" , TUR);
 }
-  float readTurbidity(int _sensorPin) {  
+bool setTime(int _setHours, int _setMinutes){ 
+  bool timeReady = false;
+  int currentTime = (Time.hour()*60)+(Time.minute());  //convert to minute
+  Serial.printf("Current Time: %i \n", currentTime);
+  int setTime = (_setHours*60)+_setMinutes;  //convert time into minutes?  
+   Serial.printf("Set Time: %i \n" ,setTime);
+
+      if(currentTime == setTime){  
+      if(Time.second() <= 2){  //only want it to happen on the second not not the whole minute
+      timeReady = true;
+      Serial.printf("Time Ready \n");
+      }
+    }
+    return timeReady;
+   }
+float readTurbidity(int _sensorPin) {  
     //maybe make average its own function and tobidity another one
   static float turbidity;
   static float samplingTime; 
@@ -46,7 +80,7 @@ void loop() {
   int i = 0;
   int _interval = 900000;  //for 900000 milliseconds for 15 minutes 
    //just an idea
-   if((millis()- samplingTime) > _interval){
+   //if((millis()- samplingTime) > _interval){
       digitalWrite(LASERPIN, HIGH);
       Serial.printf(" Laser On");
     for (i=0; i< 100; i++){
@@ -58,15 +92,14 @@ void loop() {
       Serial.printf("Median getting \n");
       _median = getMedian(vAnalogRead, 100);  //maybe convert to voltage value
       Serial.printf( "Med: %.2f \n" , _median);
-      turbidity = -1185551.78*pow((1/_median), 2) + 6874.09 * (1/_median) + 0.091;   //QUADRATIC REGRESSION INVERSSED BECAUSE WE WANT A 
+      turbidity = -1185551.78*pow((1/_median), 2) + 6874.09 * (1/_median) + 0.091;   
       //quadratic regression for this specific sensor
       //linear regression for data 2 is lowest cloudiness I could find
       Serial.printf("Tur: %.2f \n" , turbidity);
-      samplingTime = millis();
-   }
+      //samplingTime = millis();
+   //}
   return turbidity;
   }
-
 int getMedian(int array1[], int  arrayLen) {  
   int array1Tab[arrayLen];  
   int i, j, arrayTemp;
