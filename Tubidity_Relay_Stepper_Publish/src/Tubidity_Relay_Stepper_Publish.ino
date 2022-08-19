@@ -91,7 +91,9 @@ float readTurbidity(int _sensorPin) {
       Serial.printf("Median getting \n");
       _median = getMedian(vAnalogRead, 100);  //maybe convert to voltage value
       Serial.printf( "Med: %.2f \n" , _median);
-      turbidity = -1185551.78*pow((1/_median), 2) + 6874.09 * (1/_median) + 0.091;   
+      turbidity = -1185551.78*pow((1/_median), 2) + 6874.09 * (1/_median) + 0.091; 
+      //EEPROM maybe
+      //magic numbers meaningless numbers
       //quadratic regression for this specific sensor
       //linear regression for data 2 is lowest cloudiness I could find
       Serial.printf("Tur: %.2f \n" , turbidity);
