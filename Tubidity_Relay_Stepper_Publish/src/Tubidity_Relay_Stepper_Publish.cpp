@@ -14,7 +14,7 @@
 #include <math.h>
 //#include "Stepper.h"
 
-
+//declare pins
 void setup();
 void loop();
 bool setTime(int _setHours, int _setMinutes);
@@ -22,12 +22,17 @@ float readTurbidity(int _sensorPin);
 int getMedian(int array1[], int  arrayLen);
 #line 12 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
 int RELAYPIN = D11;
-int SERVOPIN =  D7;
-bool lightOn, lightOff, foodReady;
+int SERVOPIN =  D6;
 int LASERPIN = D12; //LASER PIN FOR TURPIDITY SENSOR
-int TURPIN = A5;  //i may not makes these global forever, but for now this works
+int TURPIN = A5; 
+
+
+
+bool lightOn, lightOff, foodReady, fishFed;
+int feedHour = 12, feedMin =  30;
+ //i may not makes these global forever, but for now this works
 float TUR;
-int pos = 45;  //position of servo motor
+int pos = 90;  //position of servo motor
 
 
 
@@ -45,7 +50,8 @@ void setup() {
   pinMode(TURPIN, INPUT);
 
 
-  myServo.attach(D7);
+  myServo.attach(SERVOPIN);
+  myServo.write(0);
  // myStepper.setSpeed(15);  //15 revolutions per minute
   
   Serial.begin(9600);
@@ -53,16 +59,20 @@ void setup() {
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop() {
-  foodReady = setTime(11, 32);  //military time
-  lightOn = setTime(11, 29);   //two vai
+  foodReady = setTime(feedHour, feedMin);  //military time
+  fishFed =  setTime(feedHour, feedMin + 1);   //1 minute aferwards if this happens on the hour code wonr run need to fix that
+  lightOn = setTime(11, 29);   //two variables
   lightOff = setTime(17, 31);
 
    if(foodReady){
-   myServo.write(pos);  //aboout 90 degrees 
-    delay(250);
-    myServo.write(0);  //simplest way to reset servo motor after feeding 
+    myServo.write(pos);  //aboout 90 degrees 
     Serial.print("Food Ready \n");
+    fishFed = true;
      }
+    if(fishFed){  
+      myServo.write(0);  //reset servo
+      Serial.printf("Resetting \n");
+    }
     if(lightOn){
       digitalWrite(RELAYPIN, HIGH);
       Serial.printf(" Aq On \n");
@@ -73,14 +83,14 @@ void loop() {
     }
 
   TUR = readTurbidity(TURPIN); //this may interfear with other code since I have it reading every 15 minutes right now
-  Serial.printf( "Tur: \n" , TUR);
+  ///Serial.printf( "Tur: \n" , TUR);
 }
 bool setTime(int _setHours, int _setMinutes){ 
   bool timeReady = false;
   int currentTime = (Time.hour()*60)+(Time.minute());  //convert to minute
-  Serial.printf("Current Time: %i \n", currentTime);
+ // Serial.printf("Current Time: %i \n", currentTime);
   int setTime = (_setHours*60)+_setMinutes;  //convert time into minutes?  
-   Serial.printf("Set Time: %i \n" ,setTime);
+   //Serial.printf("Set Time: %i \n" ,setTime);
 
       if(currentTime == setTime){  
       if(Time.second() <= 2){  //only want it to happen on the second not not the whole minute
@@ -149,4 +159,5 @@ int getMedian(int array1[], int  arrayLen) {
   }
    return arrayTemp;
 }
-//float getTemp();
+
+
