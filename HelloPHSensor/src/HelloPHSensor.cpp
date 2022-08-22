@@ -10,11 +10,10 @@
  * Author: Micalah Miller
  * Date: 8/15/2022
  */
-
 void setup();
 void loop();
 float readPH(int _sensorPin, float _offset, float  _slope);
-#line 8 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/HelloPHSensor/src/HelloPHSensor.ino"
+#line 7 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/HelloPHSensor/src/HelloPHSensor.ino"
 const int pHPin  =  A4;
 float phSlope = -88.31;
 float offset = 2935;

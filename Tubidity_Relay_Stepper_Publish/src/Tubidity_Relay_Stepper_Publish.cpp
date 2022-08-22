@@ -25,11 +25,11 @@ int getMedian(int array1[], int  arrayLen);
 float getTemp();
 float readPH(int _sensorPin, float _offset, float  _slope);
 #line 14 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
-int RELAYPIN = D11;
-int SERVOPIN =  D6;
+const int RELAYPIN = D11;
+const int SERVOPIN =  D6;
 const int pHPin  =  A4;
-int LASERPIN = D12; //LASER PIN FOR TURPIDITY SENSOR
-int TURPIN = A5; //photoresistor and 10k ohn resistor reading are being taken
+const int LASERPIN = D12; //LASER PIN FOR TURBIDITY SENSOR
+const int TURPIN = A5; //photoresistor and 10k ohn resistor reading are being taken
 
 const int oneWireBus = D16; //pin that temperature sensor is hooked up to
 
@@ -179,7 +179,6 @@ float getTemp(){  //publish here?
   fishTemp.requestTemperatures();  
   _fishTemp = fishTemp.getTempCByIndex(0);
   Serial.printf("Celsius temperature: %.2f \n" , _fishTemp);
-
   return _fishTemp;
 }
 float readPH(int _sensorPin, float _offset, float  _slope){
@@ -190,11 +189,11 @@ float readPH(int _sensorPin, float _offset, float  _slope){
   int _interval = 2000; 
 
   if (millis()- samplingTime > _interval){
+    phReading = 0;  //initialize variable so that it starts at 0 or else ph will get messed up;
     for(i = 0; i < 40; i++){
       phReading = phReading + analogRead(_sensorPin);  //store new readings plus old readings 
-      Serial.printf("phReading: %i" , phReading);
+      Serial.printf("phReading: %i \n" , phReading);
       delayMicroseconds(100);
-
     }
     _avg = phReading/40.00;
     Serial.printf("AVG: %.2f \n" ,_avg);

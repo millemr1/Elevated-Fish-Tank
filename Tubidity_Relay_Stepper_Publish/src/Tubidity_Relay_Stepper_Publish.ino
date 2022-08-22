@@ -11,11 +11,11 @@
 //#include "Stepper.h"
 
 //declare pins
-int RELAYPIN = D11;
-int SERVOPIN =  D6;
+const int RELAYPIN = D11;
+const int SERVOPIN =  D6;
 const int pHPin  =  A4;
-int LASERPIN = D12; //LASER PIN FOR TURPIDITY SENSOR
-int TURPIN = A5; //photoresistor and 10k ohn resistor reading are being taken
+const int LASERPIN = D12; //LASER PIN FOR TURBIDITY SENSOR
+const int TURPIN = A5; //photoresistor and 10k ohn resistor reading are being taken
 
 const int oneWireBus = D16; //pin that temperature sensor is hooked up to
 
@@ -175,6 +175,7 @@ float readPH(int _sensorPin, float _offset, float  _slope){
   int _interval = 2000; 
 
   if (millis()- samplingTime > _interval){
+    phReading = 0;  //initialize variable so that it starts at 0 or else ph will get messed up;
     for(i = 0; i < 40; i++){
       phReading = phReading + analogRead(_sensorPin);  //store new readings plus old readings 
       Serial.printf("phReading: %i \n" , phReading);
