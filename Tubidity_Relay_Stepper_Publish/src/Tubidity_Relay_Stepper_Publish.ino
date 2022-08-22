@@ -6,17 +6,22 @@
  */
 
 #include <math.h>
-#include "Stepper.h"
+//#include "Stepper.h"
 
-const int STEPSPERREVOLUTION = 2048;
+
 int RELAYPIN = D11;
+int SERVOPIN =  D7;
 bool lightOn, lightOff, foodReady;
 int LASERPIN = D12; //LASER PIN FOR TURPIDITY SENSOR
 int TURPIN = A5;  //i may not makes these global forever, but for now this works
 float TUR;
+int pos = 45;  //position of servo motor
+
+
 
 //declare objects
-Stepper myStepper(STEPSPERREVOLUTION, D6, D4, D5, D3);
+Servo myServo;
+//Stepper myStepper(STEPSPERREVOLUTION, D6, D4, D5, D3);
 
 void setup() {
   
@@ -27,7 +32,9 @@ void setup() {
   pinMode(LASERPIN, OUTPUT);
   pinMode(TURPIN, INPUT);
 
-  myStepper.setSpeed(15);  //15 revolutions per minute
+
+  myServo.attach(D7);
+ // myStepper.setSpeed(15);  //15 revolutions per minute
   
   Serial.begin(9600);
 }
@@ -39,9 +46,9 @@ void loop() {
   lightOff = setTime(17, 27);
 
    if(foodReady){
-   myStepper.step(-512);  //about 90 degrees 25% of 360
+   myServo.write(pos);  //about 90 degrees 25% of 360
     delay(250);
-    myStepper.step(512);  
+    myServo.write(-pos);  
     Serial.print("Food Ready \n");
      }
     if(lightOn){
@@ -92,7 +99,7 @@ float readTurbidity(int _sensorPin) {
       _median = getMedian(vAnalogRead, 100);  //maybe convert to voltage value
       Serial.printf( "Med: %.2f \n" , _median);
       turbidity = -1185551.78*pow((1/_median), 2) + 6874.09 * (1/_median) + 0.091; 
-      //EEPROM maybe
+      //EEPROM maybe for A,B, and C
       //magic numbers meaningless numbers
       //quadratic regression for this specific sensor
       //linear regression for data 2 is lowest cloudiness I could find
@@ -100,8 +107,7 @@ float readTurbidity(int _sensorPin) {
       //samplingTime = millis();
    }
   return turbidity;
-  }
-
+}
 int getMedian(int array1[], int  arrayLen) {  
   int array1Tab[arrayLen];  
   int i, j, arrayTemp;
