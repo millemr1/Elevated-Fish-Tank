@@ -26,8 +26,9 @@ int feedHour = 13, feedMin =  02;
 float TUR, temp;
 int pos = 180, pos2 = 0;  //position of servo motor
 
-float phSlope = -80.575;  //put in eeprom calibration later to reduce global variable count by quite a bit
-float offset = 2822.62;
+//calibrated values specific to sensor
+float phSlope = -88.31; //put in eeprom calibration later to reduce global variable count by quite a bit
+float offset = 2935.00;
 float phVal;
 
 //declare objects
@@ -45,6 +46,7 @@ void setup() {
   pinMode(RELAYPIN, OUTPUT);  //pinModes for circuits
   pinMode(LASERPIN, OUTPUT);
   pinMode(TURPIN, INPUT);
+  pinMode(pHPin, INPUT);
 
   myServo.attach(SERVOPIN);
   myServo.write(pos);
@@ -163,7 +165,6 @@ float getTemp(){  //publish here?
   fishTemp.requestTemperatures();  
   _fishTemp = fishTemp.getTempCByIndex(0);
   Serial.printf("Celsius temperature: %.2f \n" , _fishTemp);
-
   return _fishTemp;
 }
 float readPH(int _sensorPin, float _offset, float  _slope){
@@ -176,9 +177,11 @@ float readPH(int _sensorPin, float _offset, float  _slope){
   if (millis()- samplingTime > _interval){
     for(i = 0; i < 40; i++){
       phReading = phReading + analogRead(_sensorPin);  //store new readings plus old readings 
+      Serial.printf("phReading: %i \n" , phReading);
       delayMicroseconds(100);
     }
     _avg = phReading/40.00;
+    Serial.printf("AVG: %.2f \n" ,_avg);
     PH  = (_avg - _offset)/_slope;
     Serial.printf("PH: %.2f \n" , PH);
     samplingTime = millis();
