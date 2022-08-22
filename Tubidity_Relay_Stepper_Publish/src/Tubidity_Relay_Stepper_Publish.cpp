@@ -12,6 +12,8 @@
  */
 
 #include <math.h>
+#include "OneWire.h"
+#include "spark-dallas-temperature.h"
 //#include "Stepper.h"
 
 //declare pins
@@ -20,26 +22,32 @@ void loop();
 bool setTime(int _setHours, int _setMinutes);
 float readTurbidity(int _sensorPin);
 int getMedian(int array1[], int  arrayLen);
-#line 12 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
+float getTemp();
+#line 14 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
 int RELAYPIN = D11;
 int SERVOPIN =  D6;
 int LASERPIN = D12; //LASER PIN FOR TURPIDITY SENSOR
-int TURPIN = A5; 
+int TURPIN = A5; //photoresistor and 10k ohn resistor reading are being taken
 
-
+const int oneWireBus = D16; //pin that temperature sensor is hooked up to
 
 bool lightOn, lightOff, foodReady, fishFed;
+int lastTime;
 int feedHour = 13, feedMin =  02;
  //i may not makes these global forever, but for now this works
-float TUR;
-int pos = 180;  //position of servo motor
+float TUR, temp;
+int pos = 180, pos2 = 0;  //position of servo motor
 
 //declare objects
 Servo myServo;
-//Stepper myStepper(STEPSPERREVOLUTION, D6, D4, D5, D3);
+OneWire oneWire(oneWireBus); 
+DallasTemperature fishTemp(&oneWire);
+
+//Stepper myStepper(STEPSPERREVOLUTION, D6, D4, D5, D3);  
 
 void setup() {
-  
+  Serial.begin(9600);
+
   Time.zone(-6);  //MDT
   Particle.syncTime(); 
   
@@ -47,12 +55,10 @@ void setup() {
   pinMode(LASERPIN, OUTPUT);
   pinMode(TURPIN, INPUT);
 
-
   myServo.attach(SERVOPIN);
   myServo.write(pos);
  // myStepper.setSpeed(15);  //15 revolutions per minute
   
-  Serial.begin(9600);
 }
 
 // loop() runs over and over again, as quickly as it can execute.
@@ -63,7 +69,8 @@ void loop() {
   lightOff = setTime(17, 31);
 
    if(foodReady){
-    myServo.write(0);  //aboout 90 degrees 
+    myServo.write(0);  //I want my gear moving in opposite direction so I write it to zero
+
     Serial.print("Food Ready \n");
      }
     if(fishFed){  
@@ -79,6 +86,10 @@ void loop() {
       Serial.printf("AQ Off \n");
     }
   TUR = readTurbidity(TURPIN); //this may interfear with other code since I have it reading every 15 minutes right now
+  if(millis() -  lastTime > 10000){
+    temp =  getTemp(); 
+    lastTime = millis();
+  }
   ///Serial.printf( "Tur: \n" , TUR);
 }
 bool setTime(int _setHours, int _setMinutes){ 
@@ -154,4 +165,13 @@ int getMedian(int array1[], int  arrayLen) {
     arrayTemp = (array1Tab[arrayLen/ 2] + array1Tab[arrayLen / 2 - 1]) / 2;  //average if even middle becuase the array is ordered 
   }
    return arrayTemp;
+}
+float getTemp(){  //publish here?
+  float _fishTemp;
+
+  fishTemp.requestTemperatures();  
+  _fishTemp = fishTemp.getTempCByIndex(0);
+  Serial.printf("Celsius temperature: %.2f \n" , _fishTemp);
+
+  return _fishTemp;
 }
