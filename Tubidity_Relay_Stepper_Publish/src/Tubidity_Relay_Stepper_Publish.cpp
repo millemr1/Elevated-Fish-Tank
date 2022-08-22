@@ -23,9 +23,11 @@ bool setTime(int _setHours, int _setMinutes);
 float readTurbidity(int _sensorPin);
 int getMedian(int array1[], int  arrayLen);
 float getTemp();
+float readPH(int _sensorPin, float _offset, float  _slope);
 #line 14 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
 int RELAYPIN = D11;
 int SERVOPIN =  D6;
+const int pHPin  =  A4;
 int LASERPIN = D12; //LASER PIN FOR TURPIDITY SENSOR
 int TURPIN = A5; //photoresistor and 10k ohn resistor reading are being taken
 
@@ -38,11 +40,14 @@ int feedHour = 13, feedMin =  02;
 float TUR, temp;
 int pos = 180, pos2 = 0;  //position of servo motor
 
+float phSlope = -80.575;  //put in eeprom calibration later to reduce global variable count by quite a bit
+float offset = 2822.62;
+float phVal;
+
 //declare objects
 Servo myServo;
 OneWire oneWire(oneWireBus); 
 DallasTemperature fishTemp(&oneWire);
-
 //Stepper myStepper(STEPSPERREVOLUTION, D6, D4, D5, D3);  
 
 void setup() {
@@ -58,10 +63,9 @@ void setup() {
   myServo.attach(SERVOPIN);
   myServo.write(pos);
  // myStepper.setSpeed(15);  //15 revolutions per minute
-  
+
 }
 
-// loop() runs over and over again, as quickly as it can execute.
 void loop() {
   foodReady = setTime(feedHour, feedMin);  //military time
   fishFed =  setTime(feedHour, feedMin + 1);   //1 minute aferwards if this happens on the hour code wonr run need to fix that
@@ -69,7 +73,7 @@ void loop() {
   lightOff = setTime(17, 31);
 
    if(foodReady){
-    myServo.write(0);  //I want my gear moving in opposite direction so I write it to zero
+    myServo.write(pos2);  //I want my gear moving in opposite direction so I write it to zero
 
     Serial.print("Food Ready \n");
      }
@@ -88,6 +92,7 @@ void loop() {
   TUR = readTurbidity(TURPIN); //this may interfear with other code since I have it reading every 15 minutes right now
   if(millis() -  lastTime > 10000){
     temp =  getTemp(); 
+    phVal = readPH(pHPin, offset, phSlope);
     lastTime = millis();
   }
   ///Serial.printf( "Tur: \n" , TUR);
@@ -174,4 +179,23 @@ float getTemp(){  //publish here?
   Serial.printf("Celsius temperature: %.2f \n" , _fishTemp);
 
   return _fishTemp;
+}
+float readPH(int _sensorPin, float _offset, float  _slope){
+  float PH;
+  float _avg;
+  int phReading, i;
+  static int samplingTime;
+  int _interval = 2000; 
+
+  if (millis()- samplingTime > _interval){
+    for(i = 0; i < 40; i++){
+      phReading = phReading + analogRead(_sensorPin);  //store new readings plus old readings 
+      delayMicroseconds(100);
+    }
+    _avg = phReading/40.00;
+    PH  = (_avg - _offset)/_slope;
+    Serial.printf("PH: %.2f \n" , PH);
+    samplingTime = millis();
+  }
+  return PH;
 }

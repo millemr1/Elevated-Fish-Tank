@@ -6,9 +6,10 @@
  */
 
 const int pHPin  =  A4;
-float phSlope = -80.575;
-float offset = 2822.62;
+float phSlope = -88.31;
+float offset = 2935;
 float phVal;
+int phAnalog;
 void setup() {
   pinMode(pHPin, INPUT);
   Serial.begin(9600);
@@ -18,12 +19,18 @@ void loop() {
   //Serial.printf("Analog: %i \n" , analog);
   //phVal = (analog - 2822.62)/(-80.575);
   //Serial.printf("PH: %.3f \n" , phVal);
+  phAnalog = analogRead(pHPin); 
+
+  //Serial.printf("PH ANALOG:  %i \n" , phAnalog);
+  //delay(1000);
+
 
   phVal = readPH(pHPin, offset, phSlope);
- //Serial.printf("PH VAL: %.2f \n" , phVal);
+  Serial.printf("PH VAL: %.2f \n" , phVal);
+  delay(1000);
 }
 float readPH(int _sensorPin, float _offset, float  _slope){
-  float PH;
+  static float PH;
   float _avg;
   int phReading, i;
   static int samplingTime;
