@@ -41,14 +41,14 @@ void setup() {
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop() {
-  foodReady = setTime(17, 28);  //military time
-  lightOn = setTime(17, 26);   //two vai
-  lightOff = setTime(17, 27);
+  foodReady = setTime(11, 34);  //military time
+  lightOn = setTime(11, 29);   //two vai
+  lightOff = setTime(17, 31);
 
    if(foodReady){
-   myServo.write(pos);  //about 90 degrees 25% of 360
+   myServo.write(pos);  //aboout 90 degrees 
     delay(250);
-    myServo.write(-pos);  
+    myServo.write(0);  //simplest way to reset servo motor after feeding 
     Serial.print("Food Ready \n");
      }
     if(lightOn){
@@ -104,7 +104,7 @@ float readTurbidity(int _sensorPin) {
       //quadratic regression for this specific sensor
       //linear regression for data 2 is lowest cloudiness I could find
       Serial.printf("Tur: %.2f \n" , turbidity);
-      //samplingTime = millis();
+      samplingTime = millis();
    }
   return turbidity;
 }
@@ -137,3 +137,4 @@ int getMedian(int array1[], int  arrayLen) {
   }
    return arrayTemp;
 }
+//float getTemp();
