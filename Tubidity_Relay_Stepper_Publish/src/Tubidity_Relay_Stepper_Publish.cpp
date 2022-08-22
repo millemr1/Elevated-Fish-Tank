@@ -29,12 +29,10 @@ int TURPIN = A5;
 
 
 bool lightOn, lightOff, foodReady, fishFed;
-int feedHour = 12, feedMin =  30;
+int feedHour = 13, feedMin =  02;
  //i may not makes these global forever, but for now this works
 float TUR;
-int pos = 90;  //position of servo motor
-
-
+int pos = 180;  //position of servo motor
 
 //declare objects
 Servo myServo;
@@ -51,7 +49,7 @@ void setup() {
 
 
   myServo.attach(SERVOPIN);
-  myServo.write(0);
+  myServo.write(pos);
  // myStepper.setSpeed(15);  //15 revolutions per minute
   
   Serial.begin(9600);
@@ -65,12 +63,11 @@ void loop() {
   lightOff = setTime(17, 31);
 
    if(foodReady){
-    myServo.write(pos);  //aboout 90 degrees 
+    myServo.write(0);  //aboout 90 degrees 
     Serial.print("Food Ready \n");
-    fishFed = true;
      }
     if(fishFed){  
-      myServo.write(0);  //reset servo
+      myServo.write(pos);  //reset servo
       Serial.printf("Resetting \n");
     }
     if(lightOn){
@@ -81,7 +78,6 @@ void loop() {
       digitalWrite(RELAYPIN, LOW);
       Serial.printf("AQ Off \n");
     }
-
   TUR = readTurbidity(TURPIN); //this may interfear with other code since I have it reading every 15 minutes right now
   ///Serial.printf( "Tur: \n" , TUR);
 }
@@ -159,5 +155,3 @@ int getMedian(int array1[], int  arrayLen) {
   }
    return arrayTemp;
 }
-
-
