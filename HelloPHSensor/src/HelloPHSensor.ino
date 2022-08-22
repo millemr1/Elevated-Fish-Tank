@@ -4,7 +4,6 @@
  * Author: Micalah Miller
  * Date: 8/15/2022
  */
-
 const int pHPin  =  A4;
 float phSlope = -88.31;
 float offset = 2935;
