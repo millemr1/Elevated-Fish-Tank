@@ -14,9 +14,13 @@
 #include <math.h>
 #include "OneWire.h"
 #include "spark-dallas-temperature.h"
+#include "Adafruit_MQTT.h"
+#include "Adafruit_MQTT/Adafruit_MQTT.h" 
+#include "Adafruit_MQTT/Adafruit_MQTT_SPARK.h"
+#include "credentials.h"
 //#include "Stepper.h"
 
-//declare pins
+// Setup the MQTT client class by passing in the WiFi client and MQTT server and login details. 
 void setup();
 void loop();
 bool setTime(int _setHours, int _setMinutes);
@@ -24,39 +28,52 @@ float readTurbidity(int _sensorPin);
 int getMedian(int array1[], int  arrayLen);
 float getTemp();
 float readPH(int _sensorPin, float _offset, float  _slope);
-#line 14 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
+void MQTT_connect();
+#line 18 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
+TCPClient TheClient; 
+
+//declare pins
 const int RELAYPIN = D11;
 const int SERVOPIN =  D6;
 const int pHPin  =  A4;
-const int LASERPIN = D12; //LASER PIN FOR TURBIDITY SENSOR
-const int TURPIN = A5; //photoresistor and 10k ohn resistor reading are being taken
-
-const int oneWireBus = D16; //pin that temperature sensor is hooked up to
+ //LASER PIN FOR TURBIDITY SENSOR
+const int LASERPIN = D12; 
+//photoresistor and 10k ohm resistor reading are being taken
+const int TURPIN = A5; 
+//pin that temperature sensor is hooked up to
+const int oneWireBus = D16; 
 
 bool lightOn, lightOff, foodReady, fishFed;
 int lastTime;
 int feedHour = 13, feedMin =  02;
  //i may not makes these global forever, but for now this works
-float TUR, temp;
+float TUR, temp, phVal;
 int pos = 180, pos2 = 0;  //position of servo motor
 
 //calibrated values specific to sensor
 float phSlope = -88.31; //put in eeprom calibration later to reduce global variable count by quite a bit
 float offset = 2935.00;
-float phVal;
 
 //declare objects
 Servo myServo;
 OneWire oneWire(oneWireBus); 
 DallasTemperature fishTemp(&oneWire);
+Adafruit_MQTT_SPARK mqtt(&TheClient,AIO_SERVER,AIO_SERVERPORT,AIO_USERNAME,AIO_KEY); 
+
 //Stepper myStepper(STEPSPERREVOLUTION, D6, D4, D5, D3);  
 
 void setup() {
   Serial.begin(9600);
+  waitFor(Serial.isConnected, 15000); 
 
   Time.zone(-6);  //MDT
-  Particle.syncTime(); 
-  
+  Particle.syncTime();
+
+   //Connect to WiFi without going to Particle Cloud
+  WiFi.connect();
+  while(WiFi.connecting()) {
+    Serial.printf("."); 
+  }
   pinMode(RELAYPIN, OUTPUT);  //pinModes for circuits
   pinMode(LASERPIN, OUTPUT);
   pinMode(TURPIN, INPUT);
@@ -65,10 +82,10 @@ void setup() {
   myServo.attach(SERVOPIN);
   myServo.write(pos);
  // myStepper.setSpeed(15);  //15 revolutions per minute
-
+  fishTemp.begin();
 }
-
 void loop() {
+   MQTT_connect();
   foodReady = setTime(feedHour, feedMin);  //military time
   fishFed =  setTime(feedHour, feedMin + 1);   //1 minute aferwards if this happens on the hour code wonr run need to fix that
   lightOn = setTime(11, 29);   //two variables
@@ -92,10 +109,11 @@ void loop() {
       Serial.printf("AQ Off \n");
     }
   TUR = readTurbidity(TURPIN); //this may interfear with other code since I have it reading every 15 minutes right now
-  if(millis() -  lastTime > 10000){
-    temp =  getTemp(); 
+  if(millis() -  lastTime > 20000){
+    temp =  getTemp(); //maybe commment these out
     phVal = readPH(pHPin, offset, phSlope);
     lastTime = millis();
+    bool publishPHandTemp();
   }
   ///Serial.printf( "Tur: \n" , TUR);
 }
@@ -202,4 +220,49 @@ float readPH(int _sensorPin, float _offset, float  _slope){
     samplingTime = millis();
   }
   return PH;
+}
+void MQTT_connect() {
+  int8_t ret;
+  // Stop if already connected.
+  if (mqtt.connected()) {
+    return;
+  }
+ 
+  Serial.print("Connecting to MQTT... ");
+ 
+  while ((ret = mqtt.connect()) != 0) { // connect will return 0 for connected
+       Serial.printf("%s\n",(char *)mqtt.connectErrorString(ret));
+       Serial.printf("Retrying MQTT connection in 5 seconds..\n");
+       mqtt.disconnect();
+       delay(5000);  // wait 5 seconds
+  }
+  Serial.printf("MQTT Connected!\n");
+}
+
+
+//make this publishing its own function tomorrow?
+
+// //Adafruit_MQTT_Publish mqttObjHumidity = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/HumidityPlant");
+// Adafruit_MQTT_Publish mqttObjMoisture = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/moisture-plant");
+// Adafruit_MQTT_Publish mqttObjDust = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/dustplant");
+
+bool publishPHandTemp(){  //these can publish at same time Tubridity is on its own timer becuase of the laser 
+  Adafruit_MQTT_Publish mqttObjTankTemp = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/tanktemp");
+  Adafruit_MQTT_Publish mqttObjPH = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/phdata");
+  float _PH = readPH(pHPin, offset, phSlope); //yes these are global variables, but all of these things can be altered at the top
+  float _temp = getTemp(); //there might be a better way to do this
+  bool published;  //make static?
+
+
+  if(mqtt.Update()){
+    mqttObjTankTemp.publish(_temp);
+    mqttObjPH.publish(_PH);
+    Serial.printf("Publishing Temp: %.2f \n, Publishing PH: %.2f \n" , _temp , _PH); 
+    published = true ;
+  }
+  else{
+    published = false;
+    Serial.printf(" Nothing Published \n"); 
+  }
+  return published;
 }

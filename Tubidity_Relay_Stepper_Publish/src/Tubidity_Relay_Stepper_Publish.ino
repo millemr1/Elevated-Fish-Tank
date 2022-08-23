@@ -17,7 +17,6 @@
 // Setup the MQTT client class by passing in the WiFi client and MQTT server and login details. 
 TCPClient TheClient; 
 
-
 //declare pins
 const int RELAYPIN = D11;
 const int SERVOPIN =  D6;
@@ -33,7 +32,7 @@ bool lightOn, lightOff, foodReady, fishFed;
 int lastTime;
 int feedHour = 13, feedMin =  02;
  //i may not makes these global forever, but for now this works
-float TUR, temp;
+float TUR, temp, phVal;
 int pos = 180, pos2 = 0;  //position of servo motor
 
 //calibrated values specific to sensor
@@ -68,10 +67,8 @@ void setup() {
   myServo.attach(SERVOPIN);
   myServo.write(pos);
  // myStepper.setSpeed(15);  //15 revolutions per minute
-  fishTemp.begin()
-
+  fishTemp.begin();
 }
-
 void loop() {
    MQTT_connect();
   foodReady = setTime(feedHour, feedMin);  //military time
@@ -97,10 +94,11 @@ void loop() {
       Serial.printf("AQ Off \n");
     }
   TUR = readTurbidity(TURPIN); //this may interfear with other code since I have it reading every 15 minutes right now
-  if(millis() -  lastTime > 10000){
-    temp =  getTemp(); 
+  if(millis() -  lastTime > 20000){
+    temp =  getTemp(); //maybe commment these out
     phVal = readPH(pHPin, offset, phSlope);
     lastTime = millis();
+    bool publishPHandTemp();
   }
   ///Serial.printf( "Tur: \n" , TUR);
 }
@@ -232,3 +230,24 @@ void MQTT_connect() {
 // //Adafruit_MQTT_Publish mqttObjHumidity = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/HumidityPlant");
 // Adafruit_MQTT_Publish mqttObjMoisture = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/moisture-plant");
 // Adafruit_MQTT_Publish mqttObjDust = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/dustplant");
+
+bool publishPHandTemp(){  //these can publish at same time Tubridity is on its own timer becuase of the laser 
+  Adafruit_MQTT_Publish mqttObjTankTemp = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/tanktemp");
+  Adafruit_MQTT_Publish mqttObjPH = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/phdata");
+  float _PH = readPH(pHPin, offset, phSlope); //yes these are global variables, but all of these things can be altered at the top
+  float _temp = getTemp(); //there might be a better way to do this
+  bool published;  //make static?
+
+
+  if(mqtt.Update()){
+    mqttObjTankTemp.publish(_temp);
+    mqttObjPH.publish(_PH);
+    Serial.printf("Publishing Temp: %.2f \n, Publishing PH: %.2f \n" , _temp , _PH); 
+    published = true ;
+  }
+  else{
+    published = false;
+    Serial.printf(" Nothing Published \n"); 
+  }
+  return published;
+}
