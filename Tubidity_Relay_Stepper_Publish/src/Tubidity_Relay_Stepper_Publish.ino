@@ -14,8 +14,10 @@
 #include "credentials.h"
 //#include "Stepper.h"
 
-// Setup the MQTT client class by passing in the WiFi client and MQTT server and login details. 
+
 TCPClient TheClient; 
+
+// Setup the MQTT client class by passing in the WiFi client and MQTT server and login details
 
 //declare pins
 const int RELAYPIN = D11;
@@ -46,6 +48,8 @@ Servo myServo;
 OneWire oneWire(oneWireBus); 
 DallasTemperature fishTemp(&oneWire);
 Adafruit_MQTT_SPARK mqtt(&TheClient,AIO_SERVER,AIO_SERVERPORT,AIO_USERNAME,AIO_KEY); 
+Adafruit_MQTT_Subscribe mqttObjFeedManually = Adafruit_MQTT_Subscribe(&mqtt, AIO_USERNAME "/feeds/feedfish");  
+
 
 //Stepper myStepper(STEPSPERREVOLUTION, D6, D4, D5, D3);  
 
@@ -61,6 +65,9 @@ void setup() {
   while(WiFi.connecting()) {
     Serial.printf("."); 
   }
+
+  mqtt.subscribe(&mqttObjFeedManually);
+
   pinMode(RELAYPIN, OUTPUT);  //pinModes for circuits
   pinMode(LASERPIN, OUTPUT);
   pinMode(TURPIN, INPUT);
@@ -72,6 +79,7 @@ void setup() {
   fishTemp.begin();
 }
 void loop() {
+  Serial.printf("servo angle %i \n" , myServo.read());
    MQTT_connect();
   foodReady = setTime(feedHour, feedMin);  //military time
   fishFed =  setTime(feedHour, feedMin + 1);   //1 minute aferwards if this happens on the hour code wonr run need to fix that
@@ -80,9 +88,10 @@ void loop() {
   pressed = IsButtonOnDashPressed(); //maybe get rid or pressed and put it in the if statement? 
 
     if(pressed){ //check if button on dash is pressed
-      myServo.write(pos2);
-      delay(250);
-      myServo.write(pos);
+     Serial.printf("servo angle %i \n" , myServo.read());
+      myServo.write(pos2);  //out
+      delay(1000);
+      myServo.write(pos);  //in
     }
    if(foodReady){
     myServo.write(pos2);  //I want my gear moving in opposite direction so I write it to zero
@@ -233,13 +242,6 @@ void MQTT_connect() {
   }
   Serial.printf("MQTT Connected!\n");
 }
-
-//make this publishing its own function tomorrow?
-
-// //Adafruit_MQTT_Publish mqttObjHumidity = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/HumidityPlant");
-// Adafruit_MQTT_Publish mqttObjMoisture = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/moisture-plant");
-// Adafruit_MQTT_Publish mqttObjDust = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/dustplant");
-
 bool publishPHandTemp(){  //these can publish at same time Tubridity is on its own timer becuase of the laser 
   Adafruit_MQTT_Publish mqttObjTankTemp = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/tanktemp");
   Adafruit_MQTT_Publish mqttObjPH = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/phdata");
@@ -277,7 +279,6 @@ bool publishTurbidity(){  //I may need to do this in the tur function we'll see
   return published;
 }
 bool IsButtonOnDashPressed(){
-  Adafruit_MQTT_Subscribe mqttObjFeedManually = Adafruit_MQTT_Subscribe(&mqtt, AIO_USERNAME "/feeds/feedfish");  
   float buttonState;
   bool isButtonState;
    Adafruit_MQTT_Subscribe * subscription;
