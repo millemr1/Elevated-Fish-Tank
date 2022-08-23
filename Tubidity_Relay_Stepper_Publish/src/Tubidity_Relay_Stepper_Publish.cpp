@@ -31,6 +31,7 @@ float readPH(int _sensorPin, float _offset, float  _slope);
 void MQTT_connect();
 bool publishPHandTemp();
 bool publishTurbidity();
+bool IsButtonOnDashPressed();
 #line 18 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
 TCPClient TheClient; 
 
@@ -45,7 +46,8 @@ const int TURPIN = A5;
 //pin that temperature sensor is hooked up to
 const int oneWireBus = D16; 
 
-bool lightOn, lightOff, foodReady, fishFed;
+
+bool lightOn, lightOff, foodReady, fishFed, pressed; //check if button is pressed from the dashboard
 int lastTime;
 int feedHour = 11, feedMin =  27;
  //i may not makes these global forever, but for now this works
@@ -55,6 +57,7 @@ int pos = 180, pos2 = 0;  //position of servo motor
 //calibrated values specific to sensor
 float phSlope = -88.31; //put in eeprom calibration later to reduce global variable count by quite a bit
 float offset = 2935.00;
+//check if button is pressed from the dashboard
 
 //declare objects
 Servo myServo;
@@ -92,7 +95,13 @@ void loop() {
   fishFed =  setTime(feedHour, feedMin + 1);   //1 minute aferwards if this happens on the hour code wonr run need to fix that
   lightOn = setTime(11, 24);   //two variables
   lightOff = setTime(11, 26);
+  pressed = IsButtonOnDashPressed(); //maybe get rid or pressed and put it in the if statement? 
 
+    if(pressed){ //check if button on dash is pressed
+      myServo.write(pos2);
+      delay(250);
+      myServo.write(pos);
+    }
    if(foodReady){
     myServo.write(pos2);  //I want my gear moving in opposite direction so I write it to zero
 
@@ -284,4 +293,25 @@ bool publishTurbidity(){  //I may need to do this in the tur function we'll see
     Serial.printf(" Tur did not Publish \n"); 
   }
   return published;
+}
+bool IsButtonOnDashPressed(){
+  Adafruit_MQTT_Subscribe mqttObjFeedManually = Adafruit_MQTT_Subscribe(&mqtt, AIO_USERNAME "/feeds/feedfish");  
+  float buttonState;
+  bool isButtonState;
+   Adafruit_MQTT_Subscribe * subscription;
+  while(subscription = mqtt.readSubscription(200)){
+    if(subscription == &mqttObjFeedManually){
+      buttonState = atof((char *)mqttObjFeedManually.lastread);
+      Serial.printf("Received %0.2f from Adafruit.io feed /feedfish \n", buttonState);     
+    }
+  }
+    if(buttonState == 1.00){
+      isButtonState = true;
+      Serial.printf("button is on \n");
+    }
+    else if (buttonState == 0.00){
+      isButtonState = false;
+       Serial.printf("button is off \n");
+     }
+    return isButtonState;
 }
