@@ -29,6 +29,8 @@ int getMedian(int array1[], int  arrayLen);
 float getTemp();
 float readPH(int _sensorPin, float _offset, float  _slope);
 void MQTT_connect();
+bool publishPHandTemp();
+bool publishTurbidity();
 #line 18 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
 TCPClient TheClient; 
 
@@ -45,7 +47,7 @@ const int oneWireBus = D16;
 
 bool lightOn, lightOff, foodReady, fishFed;
 int lastTime;
-int feedHour = 13, feedMin =  02;
+int feedHour = 11, feedMin =  27;
  //i may not makes these global forever, but for now this works
 float TUR, temp, phVal;
 int pos = 180, pos2 = 0;  //position of servo motor
@@ -88,8 +90,8 @@ void loop() {
    MQTT_connect();
   foodReady = setTime(feedHour, feedMin);  //military time
   fishFed =  setTime(feedHour, feedMin + 1);   //1 minute aferwards if this happens on the hour code wonr run need to fix that
-  lightOn = setTime(11, 29);   //two variables
-  lightOff = setTime(17, 31);
+  lightOn = setTime(11, 24);   //two variables
+  lightOff = setTime(11, 26);
 
    if(foodReady){
     myServo.write(pos2);  //I want my gear moving in opposite direction so I write it to zero
@@ -112,8 +114,10 @@ void loop() {
   if(millis() -  lastTime > 20000){
     temp =  getTemp(); //maybe commment these out
     phVal = readPH(pHPin, offset, phSlope);
+    publishPHandTemp();
     lastTime = millis();
-    bool publishPHandTemp();
+    publishTurbidity();// maybe put this elsewhere
+    
   }
   ///Serial.printf( "Tur: \n" , TUR);
 }
@@ -239,7 +243,6 @@ void MQTT_connect() {
   Serial.printf("MQTT Connected!\n");
 }
 
-
 //make this publishing its own function tomorrow?
 
 // //Adafruit_MQTT_Publish mqttObjHumidity = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/HumidityPlant");
@@ -263,6 +266,22 @@ bool publishPHandTemp(){  //these can publish at same time Tubridity is on its o
   else{
     published = false;
     Serial.printf(" Nothing Published \n"); 
+  }
+  return published;
+}
+bool publishTurbidity(){  //I may need to do this in the tur function we'll see
+  Adafruit_MQTT_Publish mqttObjClarity = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/turbidity");
+  bool published; //static?
+  float _turbidity = readTurbidity(TURPIN);  //also global for the sake of readibility. the pin can change and it is eaier to alter in one plae rather than 1
+
+  if(mqtt.Update()){
+    mqttObjClarity.publish(_turbidity);
+    Serial.printf("Publishing Tur: %.2f \n" , _turbidity); 
+    published = true ;
+  }
+  else{
+    published = false;
+    Serial.printf(" Tur did not Publish \n"); 
   }
   return published;
 }
