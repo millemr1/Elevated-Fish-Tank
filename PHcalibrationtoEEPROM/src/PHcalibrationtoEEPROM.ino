@@ -5,7 +5,6 @@
  * Date: 8/23/2022
  */
 
-//for slope
 
 void setup() {
 
@@ -17,11 +16,12 @@ void loop() {
   // The core of your code will likely live here.
 
 }
-
-bool floattoEEPROM(float _float1, u_int8_t _startingAddress){  //from least to greatest byte values
-  byte 3, 
-  byte 2, 
-  byte 1, 
+//maybe make a bool function
+void floattoEEPROM(float _float1, u_int8_t _startingAddress){  //from least to greatest byte values
+  float 
+  byte 3; 
+  byte 2;
+  byte 1;
   byte 0;
 
     0 = ((_float1)&& 0xFF); //LSB //maybe make a bool function
@@ -33,7 +33,5 @@ bool floattoEEPROM(float _float1, u_int8_t _startingAddress){  //from least to g
     EEPROM.WRITE(_startingAddress + 1, 1);
     EEPROM.WRITE(_startingAddress + 2, 2);
     EEPROM.WRITE(_startingAddress + 3, 3);
-
 }
- 
-  
+void EEPROMtoFloat();
