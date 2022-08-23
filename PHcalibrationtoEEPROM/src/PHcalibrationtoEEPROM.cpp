@@ -1,3 +1,9 @@
+/******************************************************/
+//       THIS IS A GENERATED FILE - DO NOT EDIT       //
+/******************************************************/
+
+#include "Particle.h"
+#line 1 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/PHcalibrationtoEEPROM/src/PHcalibrationtoEEPROM.ino"
 /*
  * Project PHcalibrationtoEEPROM
  * Description: Store Calibration Factors
@@ -6,6 +12,9 @@
  */
 
 
+void setup();
+void floattoEEPROM(float _float1, u_int8_t _startingAddress);
+#line 9 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/PHcalibrationtoEEPROM/src/PHcalibrationtoEEPROM.ino"
 float slope = -88.31;
 float offset = 2935.00;
 
@@ -22,7 +31,7 @@ void floattoEEPROM(float _float1, u_int8_t _startingAddress){  //from least to g
   int byte_0, byte_1, byte_2, byte_3;
   int _0, _1, _2, _3;
 
-    byte_0 = (_float1 && 0xFF); //LSB //maybe make a bool function
+    byte_0 = ((_float1)&& 0xFF); //LSB //maybe make a bool function
     byte_1 = ((_float1 >> 8) && 0XFF);
     byte_2 = ((_float1 >> 16) && 0xFF);
     byte_3 = ((_float1 >> 24)&& 0xFF);  //MSB
