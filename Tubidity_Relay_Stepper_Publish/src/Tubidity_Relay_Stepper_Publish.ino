@@ -79,7 +79,7 @@ void setup() {
   fishTemp.begin();
 }
 void loop() {
-  Serial.printf("servo angle %i \n" , myServo.read());
+  //Serial.printf("servo angle %i \n" , myServo.read());
    MQTT_connect();
   foodReady = setTime(feedHour, feedMin);  //military time
   fishFed =  setTime(feedHour, feedMin + 1);   //1 minute aferwards if this happens on the hour code wonr run need to fix that

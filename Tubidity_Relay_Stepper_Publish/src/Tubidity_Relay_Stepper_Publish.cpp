@@ -97,7 +97,7 @@ void setup() {
   fishTemp.begin();
 }
 void loop() {
-  Serial.printf("servo angle %i \n" , myServo.read());
+  //Serial.printf("servo angle %i \n" , myServo.read());
    MQTT_connect();
   foodReady = setTime(feedHour, feedMin);  //military time
   fishFed =  setTime(feedHour, feedMin + 1);   //1 minute aferwards if this happens on the hour code wonr run need to fix that
@@ -108,9 +108,7 @@ void loop() {
     if(pressed){ //check if button on dash is pressed
      Serial.printf("servo angle %i \n" , myServo.read());
       myServo.write(pos2);  //out
-      
-    }
-    else if(!pressed){
+      delay(1000);
       myServo.write(pos);  //in
     }
    if(foodReady){
