@@ -23,10 +23,10 @@ void loop() {
 
   //s = float2eeprom(slope, 0xA1);
   //o = float2eeprom(offset, 0xB1);
-  // //Serial.printf("Slope stored %i \n , OffsetStored %i" , s, o);
-  // slo = eeprom2float(0xA1);
-  // off = eeprom2float(0XB1);
-  // Serial.printf("Slope:  %.2f\n , Offset: %.2f\n" , slo , off);
+  //Serial.printf("Slope stored %i \n , OffsetStored %i" , s, o);
+  slo = eeprom2float(0xA1);
+  off = eeprom2float(0XB1);
+  //Serial.printf("Slope:  %.2f\n , Offset: %.2f\n" , slo , off);
 }
 //maybe make a bool function
 bool float2eeprom(float value, uint16_t addr){  //from least to greatest byte values

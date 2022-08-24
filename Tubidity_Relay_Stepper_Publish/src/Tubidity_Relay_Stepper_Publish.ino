@@ -12,8 +12,9 @@
 #include "Adafruit_MQTT/Adafruit_MQTT.h" 
 #include "Adafruit_MQTT/Adafruit_MQTT_SPARK.h"
 #include "credentials.h"
-//#include "Stepper.h"
+#include "float2eepromandBack.h"
 
+//#include "Stepper.h"
 
 TCPClient TheClient; 
 
@@ -30,7 +31,6 @@ const int TURPIN = A5;
 //pin that temperature sensor is hooked up to
 const int oneWireBus = D16; 
 
-
 bool lightOn, lightOff, foodReady, fishFed, pressed; //check if button is pressed from the dashboard
 int lastTime;
 int feedHour = 11, feedMin =  27;
@@ -39,8 +39,10 @@ float TUR, temp, phVal;
 int pos = 180, pos2 = 0;  //position of servo motor
 
 //calibrated values specific to sensor
-float phSlope = -88.31; //put in eeprom calibration later to reduce global variable count by quite a bit
-float offset = 2935.00;
+uint16_t slopeAdd = 0xA1; //memory location of slope
+uint16_t offsetAdd = 0xB1;
+float phSlope; //put in eeprom calibration later to reduce global variable count by quite a bit
+float offset;
 //check if button is pressed from the dashboard
 
 //declare objects
@@ -77,6 +79,11 @@ void setup() {
   myServo.write(pos);
  // myStepper.setSpeed(15);  //15 revolutions per minute
   fishTemp.begin();
+
+  phSlope = eeprom2float(slopeAdd);
+  offset = eeprom2float(offsetAdd); 
+  Serial.printf("Slope:  %.2f\n , Offset: %.2f\n" , phSlope , offset);
+
 }
 void loop() {
   //Serial.printf("servo angle %i \n" , myServo.read());

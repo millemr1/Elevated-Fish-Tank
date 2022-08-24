@@ -17,8 +17,8 @@ void loop();
 bool float2eeprom(float value, uint16_t addr);
 float eeprom2float(uint16_t _addr);
 #line 9 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/PHcalibrationtoEEPROM/src/PHcalibrationtoEEPROM.ino"
-float slope = -88.31;
-float offset = 2935.00;
+float slope = -88.25;
+float offset = 2935.1;
 bool s, o;
 float slo, off; 
 
@@ -39,7 +39,6 @@ void loop() {
   off = eeprom2float(0XB1);
   Serial.printf("Slope:  %.2f\n , Offset: %.2f\n" , slo , off);
 }
-
 //maybe make a bool function
 bool float2eeprom(float value, uint16_t addr){  //from least to greatest byte values
   byte byte0, byte1, byte2, byte3;
@@ -80,6 +79,5 @@ float eeprom2float(uint16_t _addr){
   value =  (byte3 << 24) | (byte2 << 16) | (byte1 << 8) | (byte0);
   valueF = value/1000.0;
   Serial.printf("Value %.2f \n " , valueF);
-
   return valueF;
 }

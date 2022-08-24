@@ -1,34 +1,3 @@
-/*
- * Project PHcalibrationtoEEPROM
- * Description: Store Calibration Factors
- * Author: Micalah Miller
- * Date: 8/23/2022
- */
-
-
-// float slope = -88.25;
-// float offset = 2935.1;
-// bool s, o;
-// float slo, off; 
-
-void setup() {
-  //s = float2eeprom(slope, 0xA1);
-  // o = float2eeprom(offset, 0xB1);
-  // Serial.printf("Slope stored %i \n , OffsetStored %i" , s, o);
-  // slo = eeprom2float(0xA1);
-  // off = eeprom2float(0XB1);
-  // Serial.printf("Slope:  %.2f\n , Offset: %.2f\n" , slo , off);
-}
-void loop() {
-
-  //s = float2eeprom(slope, 0xA1);
-  //o = float2eeprom(offset, 0xB1);
-  // //Serial.printf("Slope stored %i \n , OffsetStored %i" , s, o);
-  // slo = eeprom2float(0xA1);
-  // off = eeprom2float(0XB1);
-  // Serial.printf("Slope:  %.2f\n , Offset: %.2f\n" , slo , off);
-}
-//maybe make a bool function
 bool float2eeprom(float value, uint16_t addr){  //from least to greatest byte values
   byte byte0, byte1, byte2, byte3;
   int32_t value2save;

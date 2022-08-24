@@ -1,34 +1,6 @@
-/*
- * Project PHcalibrationtoEEPROM
- * Description: Store Calibration Factors
- * Author: Micalah Miller
- * Date: 8/23/2022
- */
+bool float2eeprom(float value, uint16_t);
+float eeprom2float(uint16_t _addr);
 
-
-// float slope = -88.25;
-// float offset = 2935.1;
-// bool s, o;
-// float slo, off; 
-
-void setup() {
-  //s = float2eeprom(slope, 0xA1);
-  // o = float2eeprom(offset, 0xB1);
-  // Serial.printf("Slope stored %i \n , OffsetStored %i" , s, o);
-  // slo = eeprom2float(0xA1);
-  // off = eeprom2float(0XB1);
-  // Serial.printf("Slope:  %.2f\n , Offset: %.2f\n" , slo , off);
-}
-void loop() {
-
-  //s = float2eeprom(slope, 0xA1);
-  //o = float2eeprom(offset, 0xB1);
-  // //Serial.printf("Slope stored %i \n , OffsetStored %i" , s, o);
-  // slo = eeprom2float(0xA1);
-  // off = eeprom2float(0XB1);
-  // Serial.printf("Slope:  %.2f\n , Offset: %.2f\n" , slo , off);
-}
-//maybe make a bool function
 bool float2eeprom(float value, uint16_t addr){  //from least to greatest byte values
   byte byte0, byte1, byte2, byte3;
   int32_t value2save;
@@ -45,6 +17,7 @@ bool float2eeprom(float value, uint16_t addr){  //from least to greatest byte va
     EEPROM.write(addr + 1, byte1);
     EEPROM.write(addr + 2, byte2);
     EEPROM.write(addr + 3, byte3);
+
     if(value = eeprom2float(addr)){ //just == or =
       matched = true;
       Serial.printf("matched \n");
@@ -55,6 +28,7 @@ bool float2eeprom(float value, uint16_t addr){  //from least to greatest byte va
     }
     return matched;
 }
+
 float eeprom2float(uint16_t _addr){ 
     byte byte0, byte1, byte2, byte3; //ordered LSB TO MSB
     int value;
