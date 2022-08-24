@@ -179,19 +179,19 @@ int getMedian(int array1[], int  arrayLen) {
   for (byte i = 0; i < arrayLen; i++){
     //array Len  is the number of times being sampled in my case 800
     array1Tab[i] = array1[i];  //making copy of array
-    Serial.printf("Arr: %i \n" , i);
+   // Serial.printf("Arr: %i \n" , i);
   }  //does this tab go here?
   for (j = 0; j < arrayLen - 1; j++){ //take largest number and move it to end of the array //tells you how many elements in the array from the end have been ordered
-      Serial.printf("J: %i \n" , j);
+     // Serial.printf("J: %i \n" , j);
     for (i = 0; i < arrayLen- j - 1; i++) {  //for each index go through previous indexes
       if (array1Tab[i] > array1Tab[i + 1]){   
         // if some number is greater than the next
         arrayTemp = array1Tab[i];  
         array1Tab[i] = array1Tab[i + 1];  //swap values in i and i+i places of array
         array1Tab[i + 1] = arrayTemp;   
-        Serial.printf("ORDERING: %i \n" , array1Tab[i]);
+       // Serial.printf("ORDERING: %i \n" , array1Tab[i]);
       }
-    Serial.printf("Arr tab: %i \n Array Temp: %i \n" , array1[i], arrayTemp);
+    //Serial.printf("Arr tab: %i \n Array Temp: %i \n" , array1[i], arrayTemp);
     }
   }
   if ((arrayLen & 1) > 0){ //checks if arrayLen isodd
