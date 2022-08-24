@@ -30,13 +30,13 @@ void loop() {
   //Serial.printf("PH: %.3f \n" , phVal);
   phAnalog = analogRead(pHPin); 
 
-  //Serial.printf("PH ANALOG:  %i \n" , phAnalog);
+  Serial.printf("PH ANALOG:  %i \n" , phAnalog);
   //delay(1000);
 
 
-  phVal = readPH(pHPin, offset, phSlope);
-  Serial.printf("PH VAL: %.2f \n" , phVal);
-  delay(1000);
+  // phVal = readPH(pHPin, offset, phSlope);
+  // Serial.printf("PH VAL: %.2f \n" , phVal);
+  // delay(1000);
 }
 float readPH(int _sensorPin, float _offset, float  _slope){
   static float PH;
@@ -46,6 +46,7 @@ float readPH(int _sensorPin, float _offset, float  _slope){
   int _interval = 2000; 
 
   if (millis()- samplingTime > _interval){
+    phReading = 0;
     for(i = 0; i < 40; i++){
       phReading = phReading + analogRead(_sensorPin);  //store new readings plus old readings 
       delayMicroseconds(100);

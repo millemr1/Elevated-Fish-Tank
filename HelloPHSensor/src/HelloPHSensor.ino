@@ -20,13 +20,13 @@ void loop() {
   //Serial.printf("PH: %.3f \n" , phVal);
   phAnalog = analogRead(pHPin); 
 
-  //Serial.printf("PH ANALOG:  %i \n" , phAnalog);
+  Serial.printf("PH ANALOG:  %i \n" , phAnalog);
   //delay(1000);
 
 
-  phVal = readPH(pHPin, offset, phSlope);
-  Serial.printf("PH VAL: %.2f \n" , phVal);
-  delay(1000);
+  // phVal = readPH(pHPin, offset, phSlope);
+  // Serial.printf("PH VAL: %.2f \n" , phVal);
+  // delay(1000);
 }
 float readPH(int _sensorPin, float _offset, float  _slope){
   static float PH;

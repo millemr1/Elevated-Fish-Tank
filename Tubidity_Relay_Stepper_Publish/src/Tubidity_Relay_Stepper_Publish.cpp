@@ -108,7 +108,7 @@ void loop() {
    MQTT_connect();
   foodReady = setTime(feedHour, feedMin);  //military time
   fishFed =  setTime(feedHour, feedMin + 1);   //1 minute aferwards if this happens on the hour code wonr run need to fix that
-  lightOn = setTime(11, 24);   //two variables
+  lightOn = setTime(11, 42);   //two variables
   lightOff = setTime(11, 26);
   pressed = IsButtonOnDashPressed(); //maybe get rid or pressed and put it in the if statement? 
 
