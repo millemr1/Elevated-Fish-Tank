@@ -1,9 +1,3 @@
-/******************************************************/
-//       THIS IS A GENERATED FILE - DO NOT EDIT       //
-/******************************************************/
-
-#include "Particle.h"
-#line 1 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
 /*
  * Project Tubidity_Relay_Stepper_Publish
  * Description: Integrate Basic functionality of my code
@@ -22,18 +16,6 @@
 
 //#include "Stepper.h"
 
-void setup();
-void loop();
-bool setTime(int _setHours, int _setMinutes);
-float readTurbidity(int _sensorPin);
-int getMedian(int array1[], int  arrayLen);
-float getTemp();
-float readPH(int _sensorPin, float _offset, float  _slope);
-void MQTT_connect();
-bool publishPHandTemp();
-bool publishTurbidity();
-bool IsButtonOnDashPressed();
-#line 19 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
 TCPClient TheClient; 
 
 // Setup the MQTT client class by passing in the WiFi client and MQTT server and login details
@@ -51,10 +33,11 @@ const int oneWireBus = D16;
 
 bool lightOn, lightOff, foodReady, fishFed, pressed; //check if button is pressed from the dashboard
 int lastTime;
-int feedHour = 11, feedMin =  27;
+int feedHour = 17, feedMin =  39;
+int morningHour = 17, morningMin = 38;
  //i may not makes these global forever, but for now this works
 float TUR, temp, phVal;
-int pos = 180, pos2 = 0;  //position of servo motor
+int pos = 45, pos2 = 0;  //position of servo motor
 
 //calibrated values specific to sensor
 uint16_t slopeAdd = 0xA1; //memory location of slope
@@ -108,8 +91,8 @@ void loop() {
    MQTT_connect();
   foodReady = setTime(feedHour, feedMin);  //military time
   fishFed =  setTime(feedHour, feedMin + 1);   //1 minute aferwards if this happens on the hour code wonr run need to fix that
-  lightOn = setTime(11, 42);   //two variables
-  lightOff = setTime(11, 26);
+  lightOn = setTime(morningHour, morningMin);   //two variables
+  lightOff = setTime(morningHour+12, morningMin);  //or make -12 if you want the light on at night
   pressed = IsButtonOnDashPressed(); //maybe get rid or pressed and put it in the if statement? 
 
     if(pressed){ //check if button on dash is pressed

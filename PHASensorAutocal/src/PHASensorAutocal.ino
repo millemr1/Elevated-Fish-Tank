@@ -8,8 +8,8 @@
 #include "float2eepromandBack.h"
 
 int phPin = A4;
-float phHigh = 10.00;  //values can be changed bases on the ph values one has handy 
-float phLow =  4.00;
+float phHigh = 9.00;  //values can be changed bases on the ph values one has handy 
+float phLow =  4.50;
 float voltageHigh, voltageLow;
 float s, o;
 
@@ -24,7 +24,7 @@ void setup() {  //do I want to run once of in void loop
 
   Serial.printf("Move to a lower PH");
 
-  delay(60000);  //time to move between sesnors 10 jars
+  delay(30000);  //time to move between sesnors 10 jars
 
   voltageLow = getRawVoltage(phPin);
   Serial.printf("Voltage for Low PH is: %.2f \n", voltageLow);

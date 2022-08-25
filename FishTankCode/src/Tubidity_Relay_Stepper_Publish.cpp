@@ -1,3 +1,9 @@
+/******************************************************/
+//       THIS IS A GENERATED FILE - DO NOT EDIT       //
+/******************************************************/
+
+#include "Particle.h"
+#line 1 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
 /*
  * Project Tubidity_Relay_Stepper_Publish
  * Description: Integrate Basic functionality of my code
@@ -16,6 +22,18 @@
 
 //#include "Stepper.h"
 
+void setup();
+void loop();
+bool setTime(int _setHours, int _setMinutes);
+float readTurbidity(int _sensorPin);
+int getMedian(int array1[], int  arrayLen);
+float getTemp();
+float readPH(int _sensorPin, float _offset, float  _slope);
+void MQTT_connect();
+bool publishPHandTemp();
+bool publishTurbidity();
+bool IsButtonOnDashPressed();
+#line 19 "/Users/Layla2/Documents/IoT/Elevated-Fish-Tank/Tubidity_Relay_Stepper_Publish/src/Tubidity_Relay_Stepper_Publish.ino"
 TCPClient TheClient; 
 
 // Setup the MQTT client class by passing in the WiFi client and MQTT server and login details
@@ -92,7 +110,7 @@ void loop() {
   foodReady = setTime(feedHour, feedMin);  //military time
   fishFed =  setTime(feedHour, feedMin + 1);   //1 minute aferwards if this happens on the hour code wonr run need to fix that
   lightOn = setTime(morningHour, morningMin);   //two variables
-  lightOff = setTime(morningHour+12, morningMin);  //or make -12 if you want the light on at night
+  lightOff = setTime(morningHour+12, morningMin);
   pressed = IsButtonOnDashPressed(); //maybe get rid or pressed and put it in the if statement? 
 
     if(pressed){ //check if button on dash is pressed
