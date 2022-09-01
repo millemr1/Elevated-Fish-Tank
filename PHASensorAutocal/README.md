@@ -1,8 +1,8 @@
 # PHASensorAutocal
 
-A Particle project named PHASensorAutocal
+A Particle project named PHASensorAutocalibration 
 
-## Welcome to your project!
+## Welcome to my PH  sensor!
 
 Every new Particle project is composed of 3 important elements that you'll see have been created in your project directory for PHASensorAutocal.
 
