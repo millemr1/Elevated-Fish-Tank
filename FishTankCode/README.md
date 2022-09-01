@@ -11,7 +11,7 @@ Anything that is in this folder when compiled  project will be sent into a firmw
 
 #### ```.ino``` file:
 
-This file is the firmware that will run as the primary application on the Particle Argon. The main functionalities are  for running a DIY turbidity sensor code, calculating its readings, timed feeding, automated lights on and off, checking temp and PH levels, and publishing this data to a feeds that a user can check remotely. This porject is useful for people who want to play around with their own microcontrollers at home, and pamper their fish. This code should be run once the circuits are wired up, and the PH sensor is calibrated (see Auto PH Calibration also in this repository). 
+This file is the firmware that will run as the primary application on the Particle Argon. The main functionalities are  for running a DIY turbidity sensor code, calculating its readings in `readTurbidty`, timed feeding, automated lights on and off, checking temp and PH levels, and publishing this data to a feeds that a user can check remotely. This porject is useful for people who want to play around with their own microcontrollers at home, and pamper their fish. This code should be run once the circuits are wired up, and the PH sensor is calibrated (see Auto PH Calibration also in this repository). 
 
 
 ##About '.ino' Code Structure
