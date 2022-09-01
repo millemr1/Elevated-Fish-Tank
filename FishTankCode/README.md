@@ -31,7 +31,7 @@ This is the file that specifies the name and version number of the libraries my 
 The only additional libraries not registered with Particle is "SendandPullfromEEPROM.h" file which is where the PH calibration values get stored after the Autocalibration code has been run. This custom library was written by me, and allows me to automate the calbration process for the Grove - PH Sensor Kit (E-201C-Blue) keeping the PH level for my fish's water accutate.
 
 
-## Compiling your project
+## Compiling this code
 
 If you want to compile this project, make sure you have the correct Particle device target selected and run `particle compile <platform>` in the CLI or click the Compile button in the Desktop IDE (I used Visual Studio Code). The following files in your project folder will be sent to the compile service:
 
