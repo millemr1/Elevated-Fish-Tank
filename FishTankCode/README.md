@@ -1,19 +1,21 @@
 # Elevated Fish Tank Main Code
-A Particle project named Tubidity_Relay_Stepper_Publish
+A Particle project named Fish Tank Main Code
 
-## Welcome to your project!
 
-Every new Particle project is composed of 3 important elements that you'll see have been created in your project directory for Tubidity_Relay_Stepper_Publish.
+Code to be uploaded to a particle microcontroller for my fish tank
 
 #### ```/src``` folder:  
-This is the source folder that contains the firmware files for your project. It should *not* be renamed. 
-Anything that is in this folder when you compile your project will be sent to our compile service and compiled into a firmware binary for the Particle device that you have targeted.
-
-If your application contains multiple files, they should all be included in the `src` folder. If your firmware depends on Particle libraries, those dependencies are specified in the `project.properties` file referenced below.
+This is the source folder that contains the firmware files for the project. It should *not* be renamed. 
+Anything that is in this folder when compiled  project will be sent into a firmware binary for the Particle device that targeted.
 
 #### ```.ino``` file:
-This file is the firmware that will run as the primary application on your Particle device. It contains a `setup()` and `loop()` function, and can be written in Wiring or C/C++. For more information about using the Particle firmware API to create firmware for your Particle device, refer to the [Firmware Reference](https://docs.particle.io/reference/firmware/) section of the Particle documentation.
 
+This file is the firmware that will run as the primary application on the Particle Argon. In the header I call the libraries I need, declare my objects, and setup global variables like the pin Numbers my circuits take and send readings from. 
+
+It also contains a `setup()` in setup enable the pinModes and setUp the other parts of my code that I only want to run once when the code starts up initially. I set up certain aspects of my code such as bool value
+
+and `loop()` function, us written in C++. For more information about using the Particle firmware API to create firmware for the Particle Argon, refer to the [Firmware Reference](https://docs.particle.io/reference/firmware/) section of the Particle documentation.
+ 
 #### ```project.properties``` file:  
 This is the file that specifies the name and version number of the libraries that your project depends on. Dependencies are added automatically to your `project.properties` file when you add a library to a project using the `particle library add` command in the CLI or add a library in the Desktop IDE.
 
