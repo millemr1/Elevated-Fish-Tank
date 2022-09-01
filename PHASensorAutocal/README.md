@@ -2,16 +2,11 @@
 
 A Particle project named PHASensorAutocalibration 
 
-## Welcome to my PH  sensor!
+## Welcome to my code to Autocalibrate the Grove - PH Sensor Kit (E-201C-Blue) PH sensor!
 
-Every new Particle project is composed of 3 important elements that you'll see have been created in your project directory for PHASensorAutocal.
+Every new Particle project is composed of 3 important elements that you'll see have been created in the project directory for PHASensorAutocal.
 
-#### ```/src``` folder:  
-This is the source folder that contains the firmware files for your project. It should *not* be renamed. 
-Anything that is in this folder when you compile your project will be sent to our compile service and compiled into a firmware binary for the Particle device that you have targeted.
-
-If your application contains multiple files, they should all be included in the `src` folder. If your firmware depends on Particle libraries, those dependencies are specified in the `project.properties` file referenced below.
-
+ 
 #### ```.ino``` file:
 This file is the firmware that will run as the primary application on your Particle device. It contains a `setup()` and `loop()` function, and can be written in Wiring or C/C++. For more information about using the Particle firmware API to create firmware for your Particle device, refer to the [Firmware Reference](https://docs.particle.io/reference/firmware/) section of the Particle documentation.
 
